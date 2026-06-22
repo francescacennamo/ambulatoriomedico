@@ -1,0 +1,20 @@
+package Entity;
+
+public enum Specializzazione {
+    OCULISTA,
+    PEDIATRA,
+    NEUROLOGO,
+    CARDIOLOGO,
+    GINECOLOGO,
+    PNEUMOLOGO,
+    DERMATOLOGO,
+    ORTOPEDICO,
+    OTORINO,
+    UROLOGO,
+    ENDOCRINOLOGO,
+    GASTROENTEROLGO,
+    CHILURGO_PLASTICO,
+    LOGOPEDISTA,
+    ANESTESISTA,
+    DENTISTA
+}
