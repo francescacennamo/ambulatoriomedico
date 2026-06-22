@@ -27,7 +27,7 @@ public class LoginForm {
 
                  if (ok) {
                      JOptionPane.showMessageDialog(null,
-                             "Login effettuato");
+                             "Login Effettuato");
                         } else {
                             JOptionPane.showMessageDialog(null,
                                     "Credenziali non valide");

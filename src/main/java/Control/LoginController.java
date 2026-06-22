@@ -9,6 +9,6 @@ public class LoginController {
         }
 
         return email.equals("admin@salus.it")
-                && password.equals("admin");
+                && password.equals("Admin");
     }
 }
