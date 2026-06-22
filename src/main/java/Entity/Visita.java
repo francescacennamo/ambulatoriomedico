@@ -34,10 +34,9 @@ public class Visita {
         return fasciaOraria;
     }
 
-    public void setFasciaOraria(String fasciaOraria) {
+    public void setFasciaOraria(FasciaOraria fasciaOraria) {
         this.fasciaOraria = fasciaOraria;
     }
-
     public StatoVisita getStato() {
         return stato;
     }
