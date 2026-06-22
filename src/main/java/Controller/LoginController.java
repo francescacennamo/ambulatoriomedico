@@ -1,4 +1,4 @@
-package Control;
+package Controller;
 //primo controller di prova senza caricare il database
 public class LoginController {
 

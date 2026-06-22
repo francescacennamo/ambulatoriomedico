@@ -1,5 +1,5 @@
 package Boundary;
-import Control.LoginController;
+import Controller.LoginController;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
