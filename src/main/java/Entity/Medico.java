@@ -24,6 +24,13 @@ public class Medico extends Utente {
         this.listaVisite = new ArrayList<>();
     }
 
+    public Specializzazione getSpecializzazione() {
+        return specializzazione;
+    }
+
+    public void setSpecializzazione(Specializzazione specializzazione) {
+        this.specializzazione = specializzazione;
+    }
 
     public StatoAccount getStatoAccount() {
         return statoAccount;
