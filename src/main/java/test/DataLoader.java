@@ -31,6 +31,7 @@ public class DataLoader {
         medico.setPassword("password");
         medico.setSpecializzazione(cardiologia);
 
+    //rendo l'oggetto persistente
         em.persist(medico);
 
         // Paziente
