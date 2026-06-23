@@ -10,8 +10,8 @@ public class LoginForm {
     private JPasswordField passwordField;
     private JButton passwordDimenticataButton;
     private JButton accediButton;
-    private JPanel lbllogo;
-    private JLabel lblLogo;
+    private JPanel mainPanel;
+    private JLabel PasswordLabel;
 
 
     public LoginForm() {
