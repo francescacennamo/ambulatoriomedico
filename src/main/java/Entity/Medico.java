@@ -1,12 +1,19 @@
 package Entity;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.*;
+@Entity
 
 public class Medico extends Utente {
 
+    @OneToOne
     private Specializzazione specializzazione;
+    @Enumerated(EnumType.STRING)
     private StatoAccount statoAccount;
+    @OneToMany
     private List<Disponibilita> disponibilita;
+
+    @OneToMany(mappedBy = "medico")
     private List<Visita> listaVisite;
 
     public Medico() {
