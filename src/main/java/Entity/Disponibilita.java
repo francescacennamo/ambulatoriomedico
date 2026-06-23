@@ -8,6 +8,7 @@ public class Disponibilita {
     private Long id;
     private String giorno;
     private String fasciaOraria;
+
     @ManyToOne
     private Medico medico;
 

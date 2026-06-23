@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 @Entity
 
 public class Medico extends Utente {
-
     @OneToOne
     private Specializzazione specializzazione;
 

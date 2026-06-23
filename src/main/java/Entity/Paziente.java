@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 @Entity
 
 public class Paziente extends Utente {
-
     @OneToMany(mappedBy = "paziente")
     private List<Visita> listaVisite;
 

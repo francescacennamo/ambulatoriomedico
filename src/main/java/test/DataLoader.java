@@ -10,7 +10,7 @@ public class DataLoader {
     public static void main(String[] args) {
 
         EntityManagerFactory emf =
-                Persistence.createEntityManagerFactory("ambulatorioPU");
+                Persistence.createEntityManagerFactory("ambulatorio_PU");
 
         EntityManager em = emf.createEntityManager();
 

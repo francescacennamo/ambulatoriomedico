@@ -14,7 +14,6 @@ public class Specializzazione {
 
     public Specializzazione() {}
 
-    // Getter e Setter
     public Long getId() { return id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
