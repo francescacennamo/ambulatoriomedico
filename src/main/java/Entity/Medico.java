@@ -8,9 +8,11 @@ public class Medico extends Utente {
 
     @OneToOne
     private Specializzazione specializzazione;
+
     @Enumerated(EnumType.STRING)
     private StatoAccount statoAccount;
-    @OneToMany
+
+    @OneToMany(mappedBy = "medico")
     private List<Disponibilita> disponibilita;
 
     @OneToMany(mappedBy = "medico")
