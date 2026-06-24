@@ -8,14 +8,14 @@
     <persistence-unit name="ambulatorioPU">
 
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>Entity.Paziente</class>
-        <class>Entity.Medico</class>
-        <class>Entity.Amministratore</class>
-        <class>Entity.Disponibilita</class>
-        <class>Entity.FasciaOraria</class>
-        <class>Entity.Specializzazione</class>
-        <class>Entity.Visita</class>
-        <class>Entity.Utente</class>
+        <class>entity.Paziente</class>
+        <class>entity.Medico</class>
+        <class>entity.Amministratore</class>
+        <class>entity.Disponibilita</class>
+        <class>entity.FasciaOraria</class>
+        <class>entity.Specializzazione</class>
+        <class>entity.Visita</class>
+        <class>entity.Utente</class>
 
         <properties>
 

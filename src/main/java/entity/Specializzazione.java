@@ -1,7 +1,6 @@
-package Entity;
+package entity;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 public class Specializzazione {
@@ -20,4 +19,8 @@ public class Specializzazione {
     public String getDescrizione() { return descrizione; }
     public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
 
+    @Override
+    public String toString() {
+        return this.nome; // Sostituisci "nome" con l'attributo che contiene il testo (es. "Cardiologia")
+    }
 }

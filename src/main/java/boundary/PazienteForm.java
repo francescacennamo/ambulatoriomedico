@@ -1,4 +1,4 @@
-package Boundary;
+package boundary;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -27,7 +27,7 @@ public class PazienteForm {
                 frameAttuale.dispose();
 
                 // 3. Apriamo la nuova interfaccia per la scelta della specializzazione
-                new FormSceltaSpecializzazione();
+
             }
         });
     }

@@ -1,7 +1,7 @@
-package Boundary;
+package boundary;
 
-import Control.LoginController;
-import Entity.Utente;
+import control.LoginController;
+import entity.Utente;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;

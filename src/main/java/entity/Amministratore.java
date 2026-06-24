@@ -1,4 +1,4 @@
-package Entity;
+package entity;
 import jakarta.persistence.*;
 @Entity
 public class Amministratore extends Utente {
