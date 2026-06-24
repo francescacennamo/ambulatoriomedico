@@ -33,4 +33,40 @@ public class UtenteDAO {
             em.close();
         }
     }
+    public Utente findByEmail(String email) {
+
+        EntityManager em = JpaUtil.getEntityManager();
+
+        try {
+
+            TypedQuery<Utente> query =
+                    em.createQuery(
+                            "FROM Utente u WHERE u.email = :email",
+                            Utente.class);
+
+            query.setParameter("email", email);
+
+            return query.getSingleResult();
+
+        } catch (Exception e) {
+
+            return null;
+
+        } finally {
+
+            em.close();
+        }
+    }
+    public void update(Utente utente) {
+
+        EntityManager em = JpaUtil.getEntityManager();
+
+        em.getTransaction().begin();
+
+        em.merge(utente);
+
+        em.getTransaction().commit();
+
+        em.close();
+    }
 }
