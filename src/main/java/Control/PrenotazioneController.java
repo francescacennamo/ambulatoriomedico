@@ -1,6 +1,5 @@
 package Control;
 
-import Database.SpecializzazioneRepository;
 import Entity.Specializzazione;
 import java.util.List;
 
