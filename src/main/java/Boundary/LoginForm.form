@@ -46,7 +46,7 @@
               <text value="Email:"/>
             </properties>
           </component>
-          <component id="c2383" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+          <component id="c2383" class="javax.swing.JTextField" binding="textEmail">
             <constraints>
               <grid row="1" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
                 <preferred-size width="250" height="30"/>
@@ -69,7 +69,7 @@
               <text value="Password:"/>
             </properties>
           </component>
-          <component id="ca2ab" class="javax.swing.JPasswordField" binding="passwordField1" default-binding="true">
+          <component id="ca2ab" class="javax.swing.JPasswordField" binding="passwordField">
             <constraints>
               <grid row="2" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
                 <preferred-size width="250" height="30"/>
@@ -89,7 +89,7 @@
               <text value="&lt;html&gt;&lt;u&gt;Password dimenticata?&lt;/u&gt;&lt;/html&gt;"/>
             </properties>
           </component>
-          <component id="49fd3" class="javax.swing.JButton" binding="accediButton" custom-create="true" default-binding="true">
+          <component id="49fd3" class="javax.swing.JButton" binding="accediButton" default-binding="true">
             <constraints>
               <grid row="3" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
