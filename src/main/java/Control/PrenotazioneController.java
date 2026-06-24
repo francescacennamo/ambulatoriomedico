@@ -1,4 +1,4 @@
-package Controller;
+package Control;
 
 import Database.SpecializzazioneRepository;
 import Entity.Specializzazione;

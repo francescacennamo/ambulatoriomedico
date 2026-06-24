@@ -1,6 +1,6 @@
 package Boundary;
 
-import Controller.PrenotazioneController;
+import Control.PrenotazioneController;
 import Entity.Specializzazione;
 
 import javax.swing.*;
