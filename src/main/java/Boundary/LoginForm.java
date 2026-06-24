@@ -34,6 +34,21 @@ public class LoginForm {
             }
         });
 
+        passwordDimenticataButton.addActionListener(e -> {
+
+            JFrame frame = new JFrame(); //creo una nuova finestra
+
+            frame.setTitle("Recupero Password"); //imposto il titolo
+
+            RecuperaPasswordForm form = new RecuperaPasswordForm(); //creo la form
+
+            frame.setContentPane(form.getContentPane()); //poi inserisco la form nella
+            //finestra
+
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
     }
 
     private void login() {
@@ -84,7 +99,7 @@ public class LoginForm {
 
     public static void main(String[] args) {
 
-        JFrame frame = new JFrame("Ambulatorio San Giorgio");
+        JFrame frame = new JFrame("Ambulatorio Vita Nova");
 
         frame.setContentPane(new LoginForm().contentPane);
 

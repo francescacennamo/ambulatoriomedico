@@ -33,6 +33,8 @@ public class UtenteDAO {
             em.close();
         }
     }
+    //questo metodo serve per trovare l'utente a partire dalla mail, quindi c'è
+    //una query che restituisce l'utente dalla ricerca della mail
     public Utente findByEmail(String email) {
 
         EntityManager em = JpaUtil.getEntityManager();
@@ -57,13 +59,15 @@ public class UtenteDAO {
             em.close();
         }
     }
+    //quando cambio password devo aggiornare il record nel database
     public void update(Utente utente) {
 
         EntityManager em = JpaUtil.getEntityManager();
 
         em.getTransaction().begin();
 
-        em.merge(utente);
+        em.merge(utente); //come hibernate aggiorna il record, prende l'utente
+        // e sincronizza con il db
 
         em.getTransaction().commit();
 
