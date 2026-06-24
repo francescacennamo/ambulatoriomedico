@@ -33,7 +33,6 @@ public class PrenotazioneVisitaForm {
     private JCheckBox ckPrenPerAltri;
     private JTextField txtNomePaziente;
     private JTextField txtCognomePaziente;
-    private JPanel panel1;
 
     // Attributi di controllo e dati primitivi
     private JDateChooser dateChooser;
