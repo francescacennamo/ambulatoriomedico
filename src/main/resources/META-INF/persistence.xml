@@ -8,6 +8,14 @@
     <persistence-unit name="ambulatorioPU">
 
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>Entity.Paziente</class>
+        <class>Entity.Medico</class>
+        <class>Entity.Amministratore</class>
+        <class>Entity.Disponibilita</class>
+        <class>Entity.FasciaOraria</class>
+        <class>Entity.Specializzazione</class>
+        <class>Entity.Visita</class>
+        <class>Entity.Utente</class>
 
         <properties>
 
@@ -21,7 +29,7 @@
                       value="root"/>
 
             <property name="jakarta.persistence.jdbc.password"
-                      value="root123"/>
+                      value="root"/>
 
             <property name="hibernate.hbm2ddl.auto"
                       value="update"/>
