@@ -5,28 +5,11 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
 public class JpaUtil {
-    private static JpaUtil instance;
-    private EntityManagerFactory emf;
 
-    private JpaUtil() {
-        // Il nome "boatyardPU" deve coincidere con il file persistence.xml
-        this.emf = Persistence.createEntityManagerFactory("boatyardPU");
-    }
+    private static final EntityManagerFactory emf =
+            Persistence.createEntityManagerFactory("ambulatorioPU");
 
-    public static synchronized JpaUtil getInstance() {
-        if (instance == null) {
-            instance = new JpaUtil();
-        }
-        return instance;
-    }
-
-    public EntityManager getEntityManager() {
+    public static EntityManager getEntityManager() {
         return emf.createEntityManager();
-    }
-
-    public void close() {
-        if (emf != null && emf.isOpen()) {
-            emf.close();
-        }
     }
 }

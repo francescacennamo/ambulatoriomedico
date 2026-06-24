@@ -1,5 +1,6 @@
 package Control;
 
+import Database.UtenteDAO;
 import Entity.Utente;
 
 public class LoginController {

@@ -46,7 +46,7 @@ public class LoginForm {
 
         LoginController controller = new LoginController();
 
-        Utente utente = controller.login(email, password);
+        Utente utente = controller.login(email.trim(), password);
 
         if (utente != null) {
 

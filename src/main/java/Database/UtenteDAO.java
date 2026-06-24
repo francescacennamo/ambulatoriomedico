@@ -1,23 +1,36 @@
 package Database;
 
 import Entity.Utente;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 
 public class UtenteDAO {
 
     public Utente login(String email, String password) {
 
-        // per ora simuliamo il database
+        EntityManager em = JpaUtil.getEntityManager();
 
-        if(email.equals("admin@ambulatorio.it")
-                && password.equals("1234")) {
+        try {
 
-            Utente utente = new Utente();
+            TypedQuery<Utente> query =
+                    em.createQuery(
+                            "SELECT u FROM Utente u " +
+                                    "WHERE u.email = :email " +
+                                    "AND u.password = :password",
+                            Utente.class);
 
-            utente.setEmail(email);
+            query.setParameter("email", email);
+            query.setParameter("password", password);
 
-            return utente;
+            return query.getSingleResult();
+
+        } catch (Exception e) {
+
+            return null;
+
+        } finally {
+
+            em.close();
         }
-
-        return null;
     }
 }
