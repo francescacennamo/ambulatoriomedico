@@ -1,5 +1,5 @@
-package test;
-
+package setup;
+//
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 

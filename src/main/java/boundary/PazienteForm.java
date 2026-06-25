@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
-
+//
 public class PazienteForm {
     private JPanel contentPane;
     private JButton logoutButton;
