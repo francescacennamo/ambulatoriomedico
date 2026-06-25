@@ -17,8 +17,8 @@ public class MainInizializzaDatabase {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                LoginForm loginForm = new LoginForm(); // sostituisci con il nome esatto
-                loginForm.setVisible(true);
+                LoginForm loginForm = new LoginForm();
+                loginForm.apriLoginForm();
             }
         });
 
