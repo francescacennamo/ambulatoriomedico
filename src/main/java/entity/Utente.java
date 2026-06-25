@@ -5,7 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.GenerationType;
-//
+
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 

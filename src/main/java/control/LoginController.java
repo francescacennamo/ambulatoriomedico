@@ -3,7 +3,7 @@ package control; // Convenzione Java: i pacchetti vanno scritti in minuscolo
 import database.GestorePersistenza;
 import entity.Utente;
 import java.util.Map;
-//
+
 public class LoginController {
 
     // MOTIVAZIONE BCED: Il controller possiede un riferimento al GestorePersistenza.
