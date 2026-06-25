@@ -21,9 +21,9 @@ public class LoginForm {
     private JTextField textEmail;
     private JPasswordField passwordField;
     private JButton accediButton;
-    private JButton passwordDimenticataButton;
     private JLabel PasswordLabel;
     private JPanel mainPanel;
+    private JLabel passwordDimenticataLabel;
 
     public LoginForm() {
 
@@ -33,24 +33,7 @@ public class LoginForm {
                 login();
             }
         });
-
-        passwordDimenticataButton.addActionListener(e -> {
-
-            JFrame frame = new JFrame(); //creo una nuova finestra
-
-            frame.setTitle("Recupero Password"); //imposto il titolo
-
-            RecuperaPasswordForm form = new RecuperaPasswordForm(); //creo la form
-
-            frame.setContentPane(form.getContentPane()); //poi inserisco la form nella
-            //finestra
-
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
     }
-
     private void login() {
 
         String email = textEmail.getText();
@@ -132,7 +115,7 @@ public class LoginForm {
         mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(7, 4, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(8, 4, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.setMaximumSize(new Dimension(500, 300));
         contentPane.setMinimumSize(new Dimension(500, 300));
         contentPane.setPreferredSize(new Dimension(500, 300));
@@ -140,7 +123,7 @@ public class LoginForm {
         mainPanel.add(contentPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         contentPane.setBorder(BorderFactory.createTitledBorder(null, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         final Spacer spacer1 = new Spacer();
-        contentPane.add(spacer1, new GridConstraints(3, 0, 4, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        contentPane.add(spacer1, new GridConstraints(3, 0, 5, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         Font label1Font = this.$$$getFont$$$("Arial", Font.BOLD, 14, label1.getFont());
         if (label1Font != null) label1.setFont(label1Font);
@@ -167,19 +150,15 @@ public class LoginForm {
         contentPane.add(PasswordLabel, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         passwordField = new JPasswordField();
         contentPane.add(passwordField, new GridConstraints(2, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(250, 30), null, 0, false));
-        passwordDimenticataButton = new JButton();
-        passwordDimenticataButton.setBackground(new Color(-1));
-        Font passwordDimenticataButtonFont = this.$$$getFont$$$("Arial", Font.ITALIC, 14, passwordDimenticataButton.getFont());
-        if (passwordDimenticataButtonFont != null) passwordDimenticataButton.setFont(passwordDimenticataButtonFont);
-        passwordDimenticataButton.setForeground(new Color(-16746281));
-        passwordDimenticataButton.setHideActionText(false);
-        passwordDimenticataButton.setText("<html><u>Password dimenticata?</u></html>");
-        contentPane.add(passwordDimenticataButton, new GridConstraints(4, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         accediButton = new JButton();
         accediButton.setBackground(new Color(-16746281));
         accediButton.setForeground(new Color(-1));
         accediButton.setText("\uD83D\uDD10 ACCEDI");
         contentPane.add(accediButton, new GridConstraints(3, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        passwordDimenticataLabel = new JLabel();
+        passwordDimenticataLabel.setForeground(new Color(-16746281));
+        passwordDimenticataLabel.setText("<html><u>Password dimenticata?</u></html>");
+        contentPane.add(passwordDimenticataLabel, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         mainPanel.add(spacer2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
@@ -218,4 +197,5 @@ public class LoginForm {
     public JComponent $$$getRootComponent$$$() {
         return mainPanel;
     }
+
 }

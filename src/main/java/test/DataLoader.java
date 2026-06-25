@@ -51,17 +51,4 @@ public class DataLoader {
 
         System.out.println("Dati caricati correttamente");
     }
-    public void salvaCodiceRecupero(
-            String email,
-            String codice) {
-
-        UtenteDAO dao = new UtenteDAO();
-
-        Utente utente =
-                dao.findByEmail(email);
-
-        utente.setCodiceRecupero(codice);
-
-        dao.update(utente);
-    }
 }

@@ -18,21 +18,12 @@ public class Utente {
     private String email;
     private String password;
     private String recapitoTelefonico;
-    private String codiceRecupero;
 
     public Utente() {
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getCodiceRecupero() {
-        return codiceRecupero;
-    }
-
-    public void setCodiceRecupero(String codiceRecupero) {
-        this.codiceRecupero = codiceRecupero;
     }
 
     public void setId(Long id) {
