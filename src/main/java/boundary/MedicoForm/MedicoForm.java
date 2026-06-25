@@ -11,7 +11,7 @@ import java.awt.*;
 import java.util.Locale;
 
 public class MedicoForm {
-    private JPanel contentPane; // aggiungi questa variabile
+    private JPanel contentPane;
     private JButton logoutButton;
     private JButton leMieVisiteButton;
 
