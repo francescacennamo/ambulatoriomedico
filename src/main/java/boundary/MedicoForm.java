@@ -30,7 +30,7 @@ public class MedicoForm {
         });
 
         leMieVisiteButton.addActionListener(e -> {
-            // qui in futuro: apri la lista visite del medico
+            new VisiteMedicoForm(medicoLoggato, currentFrame).apriForm();
         });
     }
 
