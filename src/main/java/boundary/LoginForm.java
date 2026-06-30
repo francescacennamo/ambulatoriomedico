@@ -1,8 +1,6 @@
 package boundary;
 
 import control.LoginController;
-import entity.Medico;
-import entity.Paziente;
 import entity.Utente;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -26,7 +24,6 @@ public class LoginForm {
     private JLabel PasswordLabel;
     private JPanel mainPanel;
     private JLabel passwordDimenticataLabel;
-    private JFrame currentFrame;
 
     public LoginForm() {
 
@@ -55,34 +52,34 @@ public class LoginForm {
         }
 
         LoginController controller = new LoginController();
+
         Utente utente = controller.login(email.trim(), password);
 
-        if (utente == null) {
+        if (utente != null) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Login effettuato correttamente",
+                    "Successo",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+            /*
+             * Qui successivamente apriremo:
+             *
+             * FormAmministratore
+             * FormMedico
+             * FormPaziente
+             */
+
+        } else {
+
             JOptionPane.showMessageDialog(
                     null,
                     "Email o password non valide",
                     "Errore",
                     JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        // Chiudi la finestra di login prima di aprire quella successiva
-        if (currentFrame != null) {
-            currentFrame.dispose();
-        }
-
-        if (utente instanceof Medico) {
-            new MedicoForm((Medico) utente).apriForm();
-        } else if (utente instanceof Paziente) {
-            new PazienteForm((Paziente) utente).apriForm();
-        } else {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Tipo utente non riconosciuto",
-                    "Errore",
-                    JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
     public JFrame apriLoginForm() {
         JFrame frame = new JFrame("Ambulatorio Vita Nova");
@@ -92,7 +89,6 @@ public class LoginForm {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        this.currentFrame = frame;
         return frame;
     }
 
