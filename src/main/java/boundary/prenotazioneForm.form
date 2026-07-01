@@ -42,20 +42,6 @@
           <text value="Nome"/>
         </properties>
       </component>
-      <component id="c74a2" class="javax.swing.JTextField" binding="textField1" default-binding="true">
-        <constraints>
-          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-1"/>
-          <caretColor color="-14793370"/>
-          <disabledTextColor color="-14793370"/>
-          <foreground color="-1"/>
-          <selectedTextColor color="-14793370"/>
-        </properties>
-      </component>
       <component id="9b1da" class="javax.swing.JLabel" binding="labelCognome">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -63,10 +49,11 @@
         <properties>
           <background color="-1"/>
           <font name="Arial" size="16"/>
+          <foreground color="-1"/>
           <text value="Cognome"/>
         </properties>
       </component>
-      <component id="f665c" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+      <component id="f665c" class="javax.swing.JTextField" binding="textCognome">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="-1"/>
@@ -74,7 +61,7 @@
         </constraints>
         <properties/>
       </component>
-      <component id="50818" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+      <component id="50818" class="javax.swing.JComboBox" binding="cmbSpecializzazioni">
         <constraints>
           <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -100,30 +87,46 @@
           <requestFocusEnabled value="true"/>
         </properties>
       </component>
-      <component id="d8df9" class="javax.swing.JLabel" binding="labelSpecializzazione">
-        <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Specializzazione"/>
-        </properties>
-      </component>
       <hspacer id="673c6">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
-      <component id="3fdcc" class="javax.swing.JLabel">
+      <component id="3fdcc" class="javax.swing.JLabel" binding="labelMedico">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <background color="-1"/>
+          <font name="Arial" size="16"/>
+          <foreground color="-1"/>
           <text value="Medico"/>
         </properties>
       </component>
-      <component id="54d9c" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
+      <component id="54d9c" class="javax.swing.JComboBox" binding="cmbMediciPerSpec">
         <constraints>
           <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <model/>
+        </properties>
+      </component>
+      <component id="d8df9" class="javax.swing.JLabel" binding="labelSpecializzazione">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-1"/>
+          <font name="Arial" size="16"/>
+          <foreground color="-1"/>
+          <text value="Specializzazione"/>
+        </properties>
+      </component>
+      <component id="381ee" class="javax.swing.JTextField" binding="textNome">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
         </constraints>
         <properties/>
       </component>
