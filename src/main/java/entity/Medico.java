@@ -3,9 +3,10 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
 @Entity
-
+@PrimaryKeyJoinColumn(name = "id")
 public class Medico extends Utente {
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "specializzazione_id")
     private Specializzazione specializzazione;
 
     @Enumerated(EnumType.STRING)
@@ -18,7 +19,8 @@ public class Medico extends Utente {
     private List<Visita> listaVisite;
 
     public Medico() {
-        this.statoAccount = StatoAccount.IN_ATTESA;
+        super();
+        this.statoAccount = StatoAccount.APPROVATO;
         this.disponibilita = new ArrayList<>();
         this.listaVisite = new ArrayList<>();
     }

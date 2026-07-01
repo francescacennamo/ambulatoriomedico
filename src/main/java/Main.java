@@ -1,28 +1,30 @@
 import boundary.prenotazioneForm;
+import database.JpaUtil;
 import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        // Swing richiede che l'interfaccia grafica venga avviata nel thread corretto (EDT)
+
+        // 1. Il Main inizializza l'infrastruttura di persistenza (Livello Database)
+        JpaUtil.getInstance();
+
+        // 2. Avvia la Boundary nel thread corretto (Livello Boundary)
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 try {
-                    // 1. Istanziamo la Boundary (che al suo interno chiama il Controller)
+                    // Istanziamo la Boundary.
+                    // Sarà LEI, al suo interno, a istanziare il proprio Controller,
+                    // rispettando il flusso: Boundary -> Controller -> Entity/Database.
                     prenotazioneForm form = new prenotazioneForm();
 
-                    // 2. Creiamo la finestra (il contenitore esterno)
+                    // Creazione del contenitore grafico standard
                     JFrame frame = new JFrame("Test Prenotazione Form");
-
-                    // Diciamo al programma di chiudersi definitivamente quando premiamo la "X"
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                    // 3. Inseriamo il pannello della Form dentro la finestra
                     frame.setContentPane(form.getContentPane());
 
-                    // 4. Adattiamo le dimensioni della finestra al contenuto e rendiamola visibile
                     frame.pack();
-                    frame.setLocationRelativeTo(null); // Centra la finestra sullo schermo
+                    frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
 
                 } catch (Exception e) {

@@ -16,6 +16,7 @@
         <class>entity.Specializzazione</class>
         <class>entity.Visita</class>
         <class>entity.Utente</class>
+        <class>entity.RegistroClinica</class>
 
         <properties>
 

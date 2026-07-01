@@ -3,82 +3,73 @@ package setup;
 import entity.*;
 import database.GestorePersistenza;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 public class DatiTestClinica {
 
-    private DatiTestClinica() {}
+    private DatiTestClinica() {
+        // Classe di utilità
+    }
 
     public static void popola(RegistroClinica registro) {
 
         GestorePersistenza gestore = new GestorePersistenza();
 
-        // 1. Specializzazioni
-        Specializzazione cardiologia = new Specializzazione();
-        cardiologia.setNome("Cardiologia");
-        cardiologia.setDescrizione("Malattie del cuore");
-        gestore.salva(cardiologia);
+        // 1. Registrazione Medici tramite Registro
+        // (Controlliamo se non ci sono già per non violare i vincoli UNIQUE)
+        if (gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "marco.neri@clinica.it")) == null) {
+            registro.registraMedico("Marco", "Neri", "marco.neri@clinica.it", "pass123", "3331234567", "Cardiologia");
+        }
+        if (gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "dario.bianchi@clinica.it")) == null) {
+            registro.registraMedico("Dario", "Bianchi", "dario.bianchi@clinica.it", "p123", "3934956131", "Cardiologia");
+        }
+        if (gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "sara.greco@clinica.it")) == null) {
+            registro.registraMedico("Sara", "Greco", "sara.greco@clinica.it", "pass456", "3339876543", "Ortopedia");
+        }
 
-        Specializzazione ortopedia = new Specializzazione();
-        ortopedia.setNome("Ortopedia");
-        ortopedia.setDescrizione("Malattie dell'apparato locomotore");
-        gestore.salva(ortopedia);
+        // 2. Registrazione Pazienti tramite Registro
+        if (gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "mario.rossi@email.it")) == null) {
+            registro.registraPaziente("Mario", "Rossi", "mario.rossi@email.it", "pass789", "3201234567");
+        }
+        if (gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "anna.bianchi@email.it")) == null) {
+            registro.registraPaziente("Anna", "Bianchi", "anna.bianchi@email.it", "pass000", "3207654321");
+        }
 
-        // 2. Medici
-        Medico marco = new Medico();
-        marco.setNome("Marco");
-        marco.setCognome("Neri");
-        marco.setEmail("marco.neri@clinica.it");
-        marco.setPassword("pass123");
-        marco.setRecapitoTelefonico("3331234567");
-        marco.setSpecializzazione(cardiologia);
-        gestore.salva(marco);
+        // 3. Recupero delle istanze salvate per impostare le relazioni successive
+        Medico marco = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "marco.neri@clinica.it"));
+        Medico sara = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "sara.greco@clinica.it"));
+        Paziente mario = gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "mario.rossi@email.it"));
+        Paziente anna = gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "anna.bianchi@email.it"));
 
-        Medico sara = new Medico();
-        sara.setNome("Sara");
-        sara.setCognome("Greco");
-        sara.setEmail("sara.greco@clinica.it");
-        sara.setPassword("pass456");
-        sara.setRecapitoTelefonico("3339876543");
-        sara.setSpecializzazione(ortopedia);
-        gestore.salva(sara);
+        // 4. Inserimento Fasce Orarie (solo se la tabella è attualmente vuota)
+        List<FasciaOraria> caricate = gestore.cercaPerCampi(FasciaOraria.class, Map.of());
+        if (caricate.isEmpty() && marco != null && sara != null) {
 
-        // 3. Pazienti
-        Paziente mario = new Paziente();
-        mario.setNome("Mario");
-        mario.setCognome("Rossi");
-        mario.setEmail("mario.rossi@email.it");
-        mario.setPassword("pass789");
-        mario.setRecapitoTelefonico("3201234567");
-        gestore.salva(mario);
+            FasciaOraria fascia1 = new FasciaOraria("09:00 - 09:30", LocalDate.of(2026, 7, 1), marco);
+            FasciaOraria fascia2 = new FasciaOraria("10:00 - 10:30", LocalDate.of(2026, 7, 1), marco);
+            FasciaOraria fascia3 = new FasciaOraria("09:00 - 09:30", LocalDate.of(2026, 7, 2), sara);
+            FasciaOraria fascia4 = new FasciaOraria("11:00 - 11:30", LocalDate.of(2026, 7, 2), sara);
 
-        Paziente anna = new Paziente();
-        anna.setNome("Anna");
-        anna.setCognome("Bianchi");
-        anna.setEmail("anna.bianchi@email.it");
-        anna.setPassword("pass000");
-        anna.setRecapitoTelefonico("3207654321");
-        gestore.salva(anna);
+            gestore.salvaTutti(fascia1, fascia2, fascia3, fascia4);
 
-        // 4. Fasce orarie
-        FasciaOraria fascia1 = new FasciaOraria("09:00 - 09:30", LocalDate.of(2026, 7, 1), marco);
-        gestore.salva(fascia1);
+            // 5. Creazione Visite legate alle fasce
+            // STILE PROFESSORE: Salviamo la visita e AGGIORNIAMO lo stato della fascia con aggiorna()
+            if (mario != null) {
+                Visita visita1 = new Visita(mario, marco, fascia1);
+                fascia1.setStato(StatoFascia.PRENOTATA);
 
-        FasciaOraria fascia2 = new FasciaOraria("10:00 - 10:30", LocalDate.of(2026, 7, 1), marco);
-        gestore.salva(fascia2);
+                gestore.salva(visita1);            // Salva l'oggetto nuovo
+                gestore.aggiorna(fascia1);         // Aggiorna l'oggetto modificato (Stile Professore)
+            }
 
-        FasciaOraria fascia3 = new FasciaOraria("09:00 - 09:30", LocalDate.of(2026, 7, 2), sara);
-        gestore.salva(fascia3);
+            if (anna != null) {
+                Visita visita2 = new Visita(anna, sara, fascia3);
+                fascia3.setStato(StatoFascia.PRENOTATA);
 
-        FasciaOraria fascia4 = new FasciaOraria("11:00 - 11:30", LocalDate.of(2026, 7, 2), sara);
-        gestore.salva(fascia4);
-
-        // 5. Visite
-        Visita visita1 = new Visita(mario, marco, fascia1);
-        fascia1.setStato(StatoFascia.PRENOTATA);
-        gestore.salvaTutti(visita1, fascia1);
-
-        Visita visita2 = new Visita(anna, sara, fascia3);
-        fascia3.setStato(StatoFascia.PRENOTATA);
-        gestore.salvaTutti(visita2, fascia3);
+                gestore.salva(visita2);            // Salva l'oggetto nuovo
+                gestore.aggiorna(fascia3);         // Aggiorna l'oggetto modificato
+            }
+        }
     }
 }
