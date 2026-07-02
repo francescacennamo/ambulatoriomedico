@@ -33,7 +33,7 @@
                       value="root"/>
 
             <property name="hibernate.hbm2ddl.auto"
-                      value="update"/>
+                      value="create"/>
 
             <property name="hibernate.show_sql"
                       value="true"/>
