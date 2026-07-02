@@ -13,6 +13,8 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Map;
 
@@ -38,6 +40,13 @@ public class PrenotazioneForm {
     private JSpinner spinnerData;
     private JComboBox cmbFasciaOraria;
     private JLabel labelFasciaOraria;
+    private JLabel labelNomeAltro;
+    private JTextField textNomeAltro;
+    private JTextField textCognomeAltro;
+    private JLabel cognomeAltroLabel;
+    private JLabel logoLabel;
+    private JButton confermaButton;
+    private JButton annullaButton;
 
     private PrenotazioneController controller;
     private Map<Long, String> mappaSpecializzazioni;
@@ -91,8 +100,7 @@ public class PrenotazioneForm {
                     // Qui trovi l'ID del medico selezionato se ti servirà per salvare la prenotazione
                     Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
                     System.out.println("ID Medico selezionato: " + idMedico);
-                }
-                else {
+                } else {
                     cmbFasciaOraria.removeAllItems();
                 }
             }
@@ -100,7 +108,19 @@ public class PrenotazioneForm {
         siCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // Controlliamo se la checkbox è spuntata (true o false)
+                boolean spuntata = siCheckBox.isSelected();
 
+                // Mostriamo o nascondiamo i campi di conseguenza
+                labelNomeAltro.setVisible(spuntata);
+                textNomeAltro.setVisible(spuntata);
+                cognomeAltroLabel.setVisible(spuntata);
+                textCognomeAltro.setVisible(spuntata);
+
+                // Chiediamo al pannello principale di ricalcolare il layout grafico
+                // per evitare che i componenti si sovrappongano o lascino buchi bianchi
+                contentPane.revalidate();
+                contentPane.repaint();
             }
         });
         spinnerData.addChangeListener(new ChangeListener() {
@@ -113,6 +133,54 @@ public class PrenotazioneForm {
                     Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
                     // Aggiorna le fasce orarie disponibili per la NUOVA data selezionata
                     popolaFasceOrarie(idMedico);
+                }
+            }
+        });
+        confermaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
+                String orarioSelezionato = (String) cmbFasciaOraria.getSelectedItem();
+                String emailLoggato = textEmail.getText().trim();
+
+                if (medicoSelezionato == null || orarioSelezionato == null || emailLoggato.isEmpty()) {
+                    JOptionPane.showMessageDialog(contentPane, "Compilare i campi obbligatori (Medico, Fascia, tua Email).", "Errore", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
+                Long idFascia = trovaIdFasciaDaOrario(orarioSelezionato);
+
+                boolean prenotaPerAltro = siCheckBox.isSelected();
+                String nomeAltro = textNomeAltro.getText().trim();
+                String cognomeAltro = textCognomeAltro.getText().trim();
+
+                // Validazione se prenota per un terzo
+                if (prenotaPerAltro && (nomeAltro.isEmpty() || cognomeAltro.isEmpty())) {
+                    JOptionPane.showMessageDialog(contentPane, "Inserisci Nome e Cognome della persona per cui stai prenotando.", "Dati Mancanti", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                // Chiamata al controller
+                boolean successo = controller.confermaPrenotazione(idMedico, idFascia, emailLoggato, prenotaPerAltro, nomeAltro, cognomeAltro);
+
+                if (successo) {
+                    JOptionPane.showMessageDialog(contentPane, "Visita prenotata con successo!", "Conferma", JOptionPane.INFORMATION_MESSAGE);
+                    if (idMedico != null) {
+                        popolaFasceOrarie(idMedico); // Aggiorna la combo box nascondendo il turno preso
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(contentPane, "Impossibile completare la prenotazione. Controllare i dati.", "Errore", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        annullaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Chiude la finestra corrente in cui si trova il contentPane
+                Window win = SwingUtilities.getWindowAncestor(contentPane);
+                if (win != null) {
+                    win.dispose();
                 }
             }
         });
@@ -166,6 +234,7 @@ public class PrenotazioneForm {
         }
         return null;
     }
+
     private void popolaFasceOrarie(Long idMedico) {
         cmbFasciaOraria.removeAllItems();
 
@@ -173,8 +242,8 @@ public class PrenotazioneForm {
 
         // 1. Recupera la data dallo JSpinner e convertila in LocalDate
         Date dateDaSpinner = (Date) spinnerData.getValue();
-        java.time.LocalDate localDate = dateDaSpinner.toInstant()
-                .atZone(java.time.ZoneId.systemDefault())
+        LocalDate localDate = dateDaSpinner.toInstant()
+                .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
         // 2. Chiedi al controller le fasce DISPONIBILI
@@ -206,14 +275,18 @@ public class PrenotazioneForm {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(9, 5, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(15, 5, new Insets(10, 10, 10, 10), -1, -1));
         contentPane.setBackground(new Color(-14793370));
+        contentPane.setFocusable(true);
         Font contentPaneFont = this.$$$getFont$$$(null, -1, -1, contentPane.getFont());
         if (contentPaneFont != null) contentPane.setFont(contentPaneFont);
         contentPane.setForeground(new Color(-14793370));
         contentPane.setInheritsPopupMenu(false);
+        contentPane.setMaximumSize(new Dimension(650, 370));
+        contentPane.setMinimumSize(new Dimension(650, 370));
         contentPane.setOpaque(true);
-        contentPane.setPreferredSize(new Dimension(450, 350));
+        contentPane.setPreferredSize(new Dimension(650, 370));
+        contentPane.setRequestFocusEnabled(true);
         contentPane.setVisible(true);
         labelTitolo = new JLabel();
         labelTitolo.setAutoscrolls(true);
@@ -224,7 +297,7 @@ public class PrenotazioneForm {
         labelTitolo.setOpaque(false);
         labelTitolo.setText("Prenota la tua visita");
         labelTitolo.setVisible(true);
-        contentPane.add(labelTitolo, new GridConstraints(0, 0, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelTitolo, new GridConstraints(2, 0, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelNome = new JLabel();
         labelNome.setBackground(new Color(-1));
         Font labelNomeFont = this.$$$getFont$$$("Arial", -1, 16, labelNome.getFont());
@@ -232,16 +305,16 @@ public class PrenotazioneForm {
         labelNome.setForeground(new Color(-1));
         labelNome.setOpaque(false);
         labelNome.setText("Nome");
-        contentPane.add(labelNome, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelNome, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelCognome = new JLabel();
         labelCognome.setBackground(new Color(-1));
         Font labelCognomeFont = this.$$$getFont$$$("Arial", -1, 16, labelCognome.getFont());
         if (labelCognomeFont != null) labelCognome.setFont(labelCognomeFont);
         labelCognome.setForeground(new Color(-1));
         labelCognome.setText("Cognome");
-        contentPane.add(labelCognome, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelCognome, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textCognome = new JTextField();
-        contentPane.add(textCognome, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        contentPane.add(textCognome, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         cmbSpecializzazioni = new JComboBox();
         cmbSpecializzazioni.setEnabled(true);
         cmbSpecializzazioni.setFocusable(true);
@@ -262,69 +335,104 @@ public class PrenotazioneForm {
         cmbSpecializzazioni.setModel(defaultComboBoxModel1);
         cmbSpecializzazioni.setOpaque(true);
         cmbSpecializzazioni.setRequestFocusEnabled(true);
-        contentPane.add(cmbSpecializzazioni, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(cmbSpecializzazioni, new GridConstraints(6, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        contentPane.add(spacer1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        contentPane.add(spacer1, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         labelMedico = new JLabel();
         labelMedico.setBackground(new Color(-1));
         Font labelMedicoFont = this.$$$getFont$$$("Arial", -1, 16, labelMedico.getFont());
         if (labelMedicoFont != null) labelMedico.setFont(labelMedicoFont);
         labelMedico.setForeground(new Color(-1));
         labelMedico.setText("Medico");
-        contentPane.add(labelMedico, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelMedico, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cmbMediciPerSpec = new JComboBox();
         final DefaultComboBoxModel defaultComboBoxModel2 = new DefaultComboBoxModel();
         cmbMediciPerSpec.setModel(defaultComboBoxModel2);
-        contentPane.add(cmbMediciPerSpec, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(cmbMediciPerSpec, new GridConstraints(7, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelSpecializzazione = new JLabel();
         labelSpecializzazione.setBackground(new Color(-1));
         Font labelSpecializzazioneFont = this.$$$getFont$$$("Arial", -1, 16, labelSpecializzazione.getFont());
         if (labelSpecializzazioneFont != null) labelSpecializzazione.setFont(labelSpecializzazioneFont);
         labelSpecializzazione.setForeground(new Color(-1));
         labelSpecializzazione.setText("Specializzazione");
-        contentPane.add(labelSpecializzazione, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelSpecializzazione, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textNome = new JTextField();
-        contentPane.add(textNome, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        contentPane.add(textNome, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         labelPrenAltro = new JLabel();
         labelPrenAltro.setBackground(new Color(-1));
         Font labelPrenAltroFont = this.$$$getFont$$$("Arial", -1, 16, labelPrenAltro.getFont());
         if (labelPrenAltroFont != null) labelPrenAltro.setFont(labelPrenAltroFont);
         labelPrenAltro.setForeground(new Color(-1));
         labelPrenAltro.setText("Prenoto per un'altra persona");
-        contentPane.add(labelPrenAltro, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelPrenAltro, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         siCheckBox = new JCheckBox();
         siCheckBox.setBackground(new Color(-14793370));
         Font siCheckBoxFont = this.$$$getFont$$$("Arial", -1, 12, siCheckBox.getFont());
         if (siCheckBoxFont != null) siCheckBox.setFont(siCheckBoxFont);
         siCheckBox.setForeground(new Color(-1));
         siCheckBox.setText("Sì");
-        contentPane.add(siCheckBox, new GridConstraints(8, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(siCheckBox, new GridConstraints(10, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelEmail = new JLabel();
         labelEmail.setBackground(new Color(-14793370));
         Font labelEmailFont = this.$$$getFont$$$("Arial", -1, 16, labelEmail.getFont());
         if (labelEmailFont != null) labelEmail.setFont(labelEmailFont);
         labelEmail.setForeground(new Color(-1));
         labelEmail.setText("Email");
-        contentPane.add(labelEmail, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelEmail, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textEmail = new JTextField();
         textEmail.setText("");
-        contentPane.add(textEmail, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        contentPane.add(textEmail, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         labelData = new JLabel();
         Font labelDataFont = this.$$$getFont$$$("Arial", -1, 16, labelData.getFont());
         if (labelDataFont != null) labelData.setFont(labelDataFont);
         labelData.setForeground(new Color(-1));
         labelData.setText("Data");
-        contentPane.add(labelData, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelData, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         spinnerData = new JSpinner();
-        contentPane.add(spinnerData, new GridConstraints(6, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        spinnerData.setVisible(true);
+        contentPane.add(spinnerData, new GridConstraints(8, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         cmbFasciaOraria = new JComboBox();
-        contentPane.add(cmbFasciaOraria, new GridConstraints(7, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(cmbFasciaOraria, new GridConstraints(9, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelFasciaOraria = new JLabel();
         Font labelFasciaOrariaFont = this.$$$getFont$$$("Arial", -1, 16, labelFasciaOraria.getFont());
         if (labelFasciaOrariaFont != null) labelFasciaOraria.setFont(labelFasciaOrariaFont);
         labelFasciaOraria.setForeground(new Color(-1));
         labelFasciaOraria.setText("Fascia Oraria");
-        contentPane.add(labelFasciaOraria, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.add(labelFasciaOraria, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelNomeAltro = new JLabel();
+        Font labelNomeAltroFont = this.$$$getFont$$$("Arial", -1, 16, labelNomeAltro.getFont());
+        if (labelNomeAltroFont != null) labelNomeAltro.setFont(labelNomeAltroFont);
+        labelNomeAltro.setForeground(new Color(-1));
+        labelNomeAltro.setText("Nome del paziente");
+        labelNomeAltro.setVisible(false);
+        contentPane.add(labelNomeAltro, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        textNomeAltro = new JTextField();
+        textNomeAltro.setVisible(false);
+        contentPane.add(textNomeAltro, new GridConstraints(11, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        cognomeAltroLabel = new JLabel();
+        Font cognomeAltroLabelFont = this.$$$getFont$$$("Arial", -1, 16, cognomeAltroLabel.getFont());
+        if (cognomeAltroLabelFont != null) cognomeAltroLabel.setFont(cognomeAltroLabelFont);
+        cognomeAltroLabel.setForeground(new Color(-1));
+        cognomeAltroLabel.setText("Cognome del paziente");
+        cognomeAltroLabel.setVisible(false);
+        contentPane.add(cognomeAltroLabel, new GridConstraints(12, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        textCognomeAltro = new JTextField();
+        textCognomeAltro.setVisible(false);
+        contentPane.add(textCognomeAltro, new GridConstraints(12, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        contentPane.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        logoLabel = new JLabel();
+        Font logoLabelFont = this.$$$getFont$$$("Felix Titling", -1, 28, logoLabel.getFont());
+        if (logoLabelFont != null) logoLabel.setFont(logoLabelFont);
+        logoLabel.setForeground(new Color(-1));
+        logoLabel.setText("VitaNova");
+        contentPane.add(logoLabel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        confermaButton = new JButton();
+        confermaButton.setText("Conferma");
+        contentPane.add(confermaButton, new GridConstraints(13, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        annullaButton = new JButton();
+        annullaButton.setText("Annulla");
+        contentPane.add(annullaButton, new GridConstraints(14, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

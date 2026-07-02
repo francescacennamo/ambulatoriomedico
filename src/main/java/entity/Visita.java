@@ -1,6 +1,5 @@
 package entity;
 
-import java.time.LocalDate;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,9 +8,7 @@ public class Visita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Rimosso LocalDate data perché è già dentro FasciaOraria
-
-    @OneToOne // Una visita occupa esattamente una fascia oraria
+    @OneToOne
     @JoinColumn(name = "fasciaoraria_id")
     private FasciaOraria fasciaOraria;
 
@@ -24,7 +21,11 @@ public class Visita {
 
     @ManyToOne
     @JoinColumn(name = "paziente_id")
-    private Paziente paziente;
+    private Paziente paziente; // Chi prenota (Utente loggato)
+
+    // NUOVI CAMPI TESTUALI PER LA PRENOTAZIONE A TERZI
+    private String beneficiarioNome;
+    private String beneficiarioCognome;
 
     public Visita() {
         this.stato = StatoVisita.PRENOTATA;
@@ -37,7 +38,7 @@ public class Visita {
         this.stato = StatoVisita.PRENOTATA;
     }
 
-    // Mantieni i tuoi getter e setter standard modificando il tipo di FasciaOraria
+    // GETTER E SETTER
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public FasciaOraria getFasciaOraria() { return fasciaOraria; }
@@ -48,4 +49,9 @@ public class Visita {
     public void setMedico(Medico medico) { this.medico = medico; }
     public Paziente getPaziente() { return paziente; }
     public void setPaziente(Paziente paziente) { this.paziente = paziente; }
+
+    public String getBeneficiarioNome() { return beneficiarioNome; }
+    public void setBeneficiarioNome(String beneficiarioNome) { this.beneficiarioNome = beneficiarioNome; }
+    public String getBeneficiarioCognome() { return beneficiarioCognome; }
+    public void setBeneficiarioCognome(String beneficiarioCognome) { this.beneficiarioCognome = beneficiarioCognome; }
 }

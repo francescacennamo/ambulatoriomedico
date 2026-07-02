@@ -6,6 +6,8 @@ import entity.Medico;
 import entity.FasciaOraria;
 import entity.Disponibilita;
 import entity.StatoFascia;
+import entity.Visita;
+import entity.Paziente;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +136,40 @@ public class PrenotazioneController {
         }
 
         return mappaRisultato;
+    }
+    public boolean confermaPrenotazione(Long idMedico, Long idFascia, String emailLoggato, boolean prenotaPerAltro, String nomeAltro, String cognomeAltro) {
+        if (idMedico == null || idFascia == null || emailLoggato == null) {
+            return false;
+        }
+
+        // 1. Recuperiamo gli oggetti dal DB
+        Medico medico = gp.trovaPerId(Medico.class, idMedico);
+        FasciaOraria fascia = gp.trovaPerId(FasciaOraria.class, idFascia);
+        Paziente titolareAccount = gp.cercaPrimoPerCampi(Paziente.class, Map.of("email", emailLoggato));
+
+        if (medico == null || fascia == null || titolareAccount == null || fascia.getStato() != entity.StatoFascia.DISPONIBILE) {
+            return false;
+        }
+
+        // 2. Creiamo l'oggetto Visita legandolo al titolare dell'account
+        Visita nuovaVisita = new Visita(titolareAccount, medico, fascia);
+
+        // 3. Se la checkbox era spuntata, aggiungiamo i dati dell'altra persona sulla visita
+        if (prenotaPerAltro) {
+            nuovaVisita.setBeneficiarioNome(nomeAltro);
+            nuovaVisita.setBeneficiarioCognome(cognomeAltro);
+        }
+
+        // 4. Cambiamo lo stato della fascia
+        fascia.setStato(entity.StatoFascia.PRENOTATA);
+
+        // 5. Salviamo e aggiorniamo nel DB
+        if (gp.salva(nuovaVisita)) {
+            gp.aggiorna(fascia);
+            return true;
+        }
+
+        return false;
     }
     }
 
