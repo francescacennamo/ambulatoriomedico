@@ -1,4 +1,4 @@
-import boundary.prenotazioneForm;
+import boundary.PrenotazioneForm;
 import database.JpaUtil;
 import javax.swing.*;
 
@@ -16,7 +16,7 @@ public class Main {
                     // Istanziamo la Boundary.
                     // Sarà LEI, al suo interno, a istanziare il proprio Controller,
                     // rispettando il flusso: Boundary -> Controller -> Entity/Database.
-                    prenotazioneForm form = new prenotazioneForm();
+                    PrenotazioneForm form = new PrenotazioneForm();
 
                     // Creazione del contenitore grafico standard
                     JFrame frame = new JFrame("Test Prenotazione Form");

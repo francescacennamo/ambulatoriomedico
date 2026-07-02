@@ -42,7 +42,26 @@ public class DatiTestClinica {
         Paziente mario = gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "mario.rossi@email.it"));
         Paziente anna = gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "anna.bianchi@email.it"));
 
-        // 4. Inserimento Fasce Orarie (solo se la tabella è attualmente vuota)
+        // NEW: 3b. Inserimento delle Disponibilità generali (il piano orario settimanale dei medici)
+        List<Disponibilita> dispCaricate = gestore.cercaPerCampi(Disponibilita.class, Map.of());
+        if (dispCaricate.isEmpty() && marco != null && sara != null) {
+
+            // Definiamo i giorni lavorativi teorici di Marco Neri
+            Disponibilita d1 = new Disponibilita("Lunedì", "09:00 - 12:00");
+            d1.setMedico(marco);
+            Disponibilita d2 = new Disponibilita("Giovedì", "15:00 - 18:00");
+            d2.setMedico(marco);
+
+            // Definiamo i giorni lavorativi teorici di Sara Greco
+            Disponibilita d3 = new Disponibilita("Martedì", "09:00 - 12:00");
+            d3.setMedico(sara);
+            Disponibilita d4 = new Disponibilita("Giovedì", "09:00 - 12:00"); // Oggi è Giovedì!
+            d4.setMedico(sara);
+
+            gestore.salvaTutti(d1, d2, d3, d4);
+        }
+
+        // 4. Inserimento Fasce Orarie fisse di test (solo se la tabella è attualmente vuota)
         List<FasciaOraria> caricate = gestore.cercaPerCampi(FasciaOraria.class, Map.of());
         if (caricate.isEmpty() && marco != null && sara != null) {
 
@@ -53,22 +72,21 @@ public class DatiTestClinica {
 
             gestore.salvaTutti(fascia1, fascia2, fascia3, fascia4);
 
-            // 5. Creazione Visite legate alle fasce
-            // STILE PROFESSORE: Salviamo la visita e AGGIORNIAMO lo stato della fascia con aggiorna()
+            // 5. Creazione Visite legate alle fasce fisse
             if (mario != null) {
                 Visita visita1 = new Visita(mario, marco, fascia1);
                 fascia1.setStato(StatoFascia.PRENOTATA);
 
-                gestore.salva(visita1);            // Salva l'oggetto nuovo
-                gestore.aggiorna(fascia1);         // Aggiorna l'oggetto modificato (Stile Professore)
+                gestore.salva(visita1);
+                gestore.aggiorna(fascia1);
             }
 
             if (anna != null) {
                 Visita visita2 = new Visita(anna, sara, fascia3);
                 fascia3.setStato(StatoFascia.PRENOTATA);
 
-                gestore.salva(visita2);            // Salva l'oggetto nuovo
-                gestore.aggiorna(fascia3);         // Aggiorna l'oggetto modificato
+                gestore.salva(visita2);
+                gestore.aggiorna(fascia3);
             }
         }
     }
