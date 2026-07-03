@@ -110,7 +110,7 @@
         <properties>
           <font name="Arial" size="24" style="1"/>
           <foreground color="-14793370"/>
-          <text value="AMBULATORIO VITA NOVA"/>
+          <text value="AMBULATORIO SALUS"/>
         </properties>
       </component>
     </children>

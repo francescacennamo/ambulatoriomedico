@@ -79,7 +79,7 @@ public class MedicoForm {
         Font label1Font = this.$$$getFont$$$("Arial", Font.BOLD, 24, label1.getFont());
         if (label1Font != null) label1.setFont(label1Font);
         label1.setForeground(new Color(-16764058));
-        label1.setText("CENTRO MEDICO VITA NOVA");
+        label1.setText("CENTRO MEDICO SALUS");
         panel1.add(label1, new GridConstraints(1, 1, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         Font label2Font = this.$$$getFont$$$("Arial", Font.ITALIC, 20, label2.getFont());

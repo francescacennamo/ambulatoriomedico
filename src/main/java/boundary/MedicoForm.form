@@ -40,7 +40,7 @@
             <properties>
               <font name="Arial" size="24" style="1"/>
               <foreground color="-16764058"/>
-              <text value="CENTRO MEDICO VITA NOVA"/>
+              <text value="CENTRO MEDICO SALUS"/>
             </properties>
           </component>
           <component id="2d4e3" class="javax.swing.JLabel">
