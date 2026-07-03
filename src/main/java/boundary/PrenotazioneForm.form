@@ -10,7 +10,7 @@
       <font/>
       <foreground color="-14793370"/>
       <inheritsPopupMenu value="false"/>
-      <maximumSize width="700" height="510"/>
+      <maximumSize width="700" height="660"/>
       <minimumSize width="700" height="660"/>
       <opaque value="true"/>
       <preferredSize width="700" height="660"/>

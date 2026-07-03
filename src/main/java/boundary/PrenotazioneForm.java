@@ -333,7 +333,7 @@ public class PrenotazioneForm {
         if (contentPaneFont != null) contentPane.setFont(contentPaneFont);
         contentPane.setForeground(new Color(-14793370));
         contentPane.setInheritsPopupMenu(false);
-        contentPane.setMaximumSize(new Dimension(700, 510));
+        contentPane.setMaximumSize(new Dimension(700, 660));
         contentPane.setMinimumSize(new Dimension(700, 660));
         contentPane.setOpaque(true);
         contentPane.setPreferredSize(new Dimension(700, 660));

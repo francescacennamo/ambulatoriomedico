@@ -12,8 +12,11 @@ import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
+import javax.swing.ImageIcon;
+import java.net.URL;
 
 public class LoginForm {
 
@@ -24,9 +27,31 @@ public class LoginForm {
     private JLabel PasswordLabel;
     private JPanel mainPanel;
     private JLabel passwordDimenticataLabel;
+    private JLabel logoLabel;
+    private JLabel titoloLabel;
+    private JLabel emailLabel;
+
 
     public LoginForm() {
+        URL imgURL = getClass().getResource("/logo.png");
 
+        if (imgURL != null) {
+
+            ImageIcon originalIcon = new ImageIcon(imgURL);
+
+
+            Image scaledImage = originalIcon.getImage().getScaledInstance(250, -1, Image.SCALE_SMOOTH);
+
+            ImageIcon resizedIcon = new ImageIcon(scaledImage);
+            logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
+            logoLabel.setText("");
+            logoLabel.setIcon(resizedIcon);
+
+        } else {
+            System.err.println("Errore: Impossibile trovare il file del logo.");
+        }
         accediButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -109,14 +134,14 @@ public class LoginForm {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
-            // Chiude la finestra di login
-            SwingUtilities.getWindowAncestor(contentPane).dispose();
+        // Chiude la finestra di login
+        SwingUtilities.getWindowAncestor(contentPane).dispose();
 
-        }
+    }
 
     public JFrame apriLoginForm() {
         JFrame frame = new JFrame("Ambulatorio Salus");
-        frame.setContentPane(contentPane);
+        frame.setContentPane(mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.pack();
@@ -129,7 +154,7 @@ public class LoginForm {
 
         JFrame frame = new JFrame("Ambulatorio Salus");
 
-        frame.setContentPane(new LoginForm().contentPane);
+        frame.setContentPane(new LoginForm().mainPanel);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -158,60 +183,130 @@ public class LoginForm {
      */
     private void $$$setupUI$$$() {
         mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBackground(new Color(-14793370));
+        mainPanel.setForeground(new Color(-14793370));
+        mainPanel.setMaximumSize(new Dimension(1000, 800));
+        mainPanel.setMinimumSize(new Dimension(700, 500));
+        mainPanel.setPreferredSize(new Dimension(800, 600));
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(8, 4, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.setMaximumSize(new Dimension(500, 300));
-        contentPane.setMinimumSize(new Dimension(500, 300));
-        contentPane.setPreferredSize(new Dimension(500, 300));
+        contentPane.setLayout(new GridBagLayout());
+        contentPane.setBackground(new Color(-1));
+        contentPane.setForeground(new Color(-1));
+        contentPane.setMaximumSize(new Dimension(700, 500));
+        contentPane.setMinimumSize(new Dimension(700, 500));
+        contentPane.setPreferredSize(new Dimension(600, 400));
         contentPane.setRequestFocusEnabled(false);
-        mainPanel.add(contentPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        GridBagConstraints gbc;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(150, 50, 150, 50);
+        mainPanel.add(contentPane, gbc);
         contentPane.setBorder(BorderFactory.createTitledBorder(null, "", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-        final Spacer spacer1 = new Spacer();
-        contentPane.add(spacer1, new GridConstraints(3, 0, 5, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        Font label1Font = this.$$$getFont$$$("Arial", Font.BOLD, 14, label1.getFont());
-        if (label1Font != null) label1.setFont(label1Font);
-        label1.setForeground(new Color(-6710887));
-        label1.setText("Accesso al sistema");
-        contentPane.add(label1, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        Font label2Font = this.$$$getFont$$$("Arial", Font.PLAIN, 14, label2.getFont());
-        if (label2Font != null) label2.setFont(label2Font);
-        label2.setForeground(new Color(-14793370));
-        label2.setText("Email:");
-        contentPane.add(label2, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        passwordField = new JPasswordField();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 4;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 90, 0, 90);
+        contentPane.add(passwordField, gbc);
+        accediButton = new JButton();
+        accediButton.setBackground(new Color(-10828087));
+        accediButton.setForeground(new Color(-1));
+        accediButton.setText("\uD83D\uDD10 ACCEDI");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 5;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 130, 0, 150);
+        contentPane.add(accediButton, gbc);
+        passwordDimenticataLabel = new JLabel();
+        passwordDimenticataLabel.setForeground(new Color(-14793370));
+        passwordDimenticataLabel.setText("<html><u>Password dimenticata?</u></html>");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        gbc.gridwidth = 4;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.insets = new Insets(0, 40, 0, 60);
+        contentPane.add(passwordDimenticataLabel, gbc);
+        logoLabel = new JLabel();
+        logoLabel.setAlignmentX(1.0f);
+        Font logoLabelFont = this.$$$getFont$$$("Arial", Font.BOLD, 24, logoLabel.getFont());
+        if (logoLabelFont != null) logoLabel.setFont(logoLabelFont);
+        logoLabel.setForeground(new Color(-14793370));
+        logoLabel.setText("");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 4;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(50, 100, 0, 160);
+        contentPane.add(logoLabel, gbc);
         textEmail = new JTextField();
         textEmail.setAlignmentX(0.5f);
         textEmail.setAlignmentY(0.5f);
         textEmail.setAutoscrolls(false);
         textEmail.setMargin(new Insets(2, 9, 2, 6));
-        contentPane.add(textEmail, new GridConstraints(1, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(250, 30), null, 0, false));
+        textEmail.setText("");
+        textEmail.setToolTipText("");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 4;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 90, 0, 90);
+        contentPane.add(textEmail, gbc);
         PasswordLabel = new JLabel();
-        Font PasswordLabelFont = this.$$$getFont$$$("Arial", Font.PLAIN, 14, PasswordLabel.getFont());
+        Font PasswordLabelFont = this.$$$getFont$$$("Arial", -1, 16, PasswordLabel.getFont());
         if (PasswordLabelFont != null) PasswordLabel.setFont(PasswordLabelFont);
         PasswordLabel.setForeground(new Color(-14793370));
         PasswordLabel.setText("Password:");
-        contentPane.add(PasswordLabel, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        passwordField = new JPasswordField();
-        contentPane.add(passwordField, new GridConstraints(2, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(250, 30), null, 0, false));
-        accediButton = new JButton();
-        accediButton.setBackground(new Color(-16746281));
-        accediButton.setForeground(new Color(-1));
-        accediButton.setText("\uD83D\uDD10 ACCEDI");
-        contentPane.add(accediButton, new GridConstraints(3, 2, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        passwordDimenticataLabel = new JLabel();
-        passwordDimenticataLabel.setForeground(new Color(-16746281));
-        passwordDimenticataLabel.setText("<html><u>Password dimenticata?</u></html>");
-        contentPane.add(passwordDimenticataLabel, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        mainPanel.add(spacer2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        Font label3Font = this.$$$getFont$$$("Arial", Font.BOLD, 24, label3.getFont());
-        if (label3Font != null) label3.setFont(label3Font);
-        label3.setForeground(new Color(-14793370));
-        label3.setText("AMBULATORIO SALUS");
-        mainPanel.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 4;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 90, 0, 0);
+        contentPane.add(PasswordLabel, gbc);
+        emailLabel = new JLabel();
+        Font emailLabelFont = this.$$$getFont$$$("Arial", -1, 16, emailLabel.getFont());
+        if (emailLabelFont != null) emailLabel.setFont(emailLabelFont);
+        emailLabel.setForeground(new Color(-14793370));
+        emailLabel.setText("Email:");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(30, 90, 0, 0);
+        contentPane.add(emailLabel, gbc);
+        titoloLabel = new JLabel();
+        Font titoloLabelFont = this.$$$getFont$$$("Arial", Font.BOLD, 16, titoloLabel.getFont());
+        if (titoloLabelFont != null) titoloLabel.setFont(titoloLabelFont);
+        titoloLabel.setForeground(new Color(-10828087));
+        titoloLabel.setRequestFocusEnabled(false);
+        titoloLabel.setText("Effettua il login al tuo account");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.insets = new Insets(50, 90, 0, 130);
+        contentPane.add(titoloLabel, gbc);
     }
 
     /**
