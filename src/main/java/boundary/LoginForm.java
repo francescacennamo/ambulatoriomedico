@@ -87,9 +87,9 @@ public class LoginForm {
                 String nomePaziente = anagrafica.getOrDefault("nome", "Utente");
                 String cognomePaziente = anagrafica.getOrDefault("cognome", "Paziente");
                 String emailPaziente = anagrafica.getOrDefault("email", email.trim());
-
+                String recapitoPaziente = anagrafica.getOrDefault("recapito", "");
                 // Passiamo i dati nativi (String) al costruttore di PazienteForm
-                PazienteForm pazienteForm = new PazienteForm(nomePaziente, cognomePaziente, emailPaziente);
+                PazienteForm pazienteForm = new PazienteForm(nomePaziente, cognomePaziente, emailPaziente, recapitoPaziente);
                 pazienteForm.apriForm();
                 break;
 

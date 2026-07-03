@@ -20,11 +20,12 @@ public class PazienteForm {
     private String nomeLoggato;
     private String cognomeLoggato;
     private String emailLoggato;
-
-    public PazienteForm(String nome, String cognome, String email) {
+    private String recapitoTelefonicoLoggato;
+    public PazienteForm(String nome, String cognome, String email, String recapitoTelefonico) {
         this.nomeLoggato = nome;
         this.cognomeLoggato = cognome;
         this.emailLoggato = email;
+        this.recapitoTelefonicoLoggato=recapitoTelefonico;
 
         prenotaVisitaButton.addActionListener(e -> {
             // Chiude la finestra attuale in modo sicuro e dinamico
@@ -33,7 +34,7 @@ public class PazienteForm {
                 win.dispose();
             }
             SwingUtilities.invokeLater(() -> {
-                new PrenotazioneForm(nomeLoggato, cognomeLoggato, emailLoggato).apriPrenotazioneForm();
+                new PrenotazioneForm(nomeLoggato, cognomeLoggato, emailLoggato, recapitoTelefonicoLoggato).apriPrenotazioneForm();
             });
         });
 

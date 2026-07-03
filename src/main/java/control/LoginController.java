@@ -87,6 +87,7 @@ public class LoginController {
             datiAnagrafici.put("nome", p.getNome());
             datiAnagrafici.put("cognome", p.getCognome());
             datiAnagrafici.put("email", p.getEmail());
+            datiAnagrafici.put("recapito", p.getRecapitoTelefonico());
         }
 
         return datiAnagrafici;
