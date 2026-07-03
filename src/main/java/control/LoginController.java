@@ -2,6 +2,8 @@ package control; // Convenzione Java: i pacchetti vanno scritti in minuscolo
 
 import database.GestorePersistenza;
 import entity.Utente;
+import entity.Paziente; // Inserito l'import per l'entità Paziente
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -53,4 +55,40 @@ public class LoginController {
         return ruoli.get(nomeClasse);
     }
 
+    /**
+     * Recupera l'anagrafica completa del Paziente tramite la sua email.
+     * Metodo sicuro per il passaggio dati tra Boundary e Database post-login.
+     *
+     * @param email email del paziente loggato
+     * @return l'oggetto Paziente trovato nel DB, oppure null
+     */
+    /**
+     * Recupera l'anagrafica del Paziente tramite la sua email e la mappa in una struttura generica.
+     * In questo modo la Boundary riceve solo stringhe e non l'oggetto Entity.
+     *
+     * @param email email del paziente loggato
+     * @return una mappa con nome, cognome ed email, oppure una mappa vuota/null
+     */
+    public Map<String, String> ottieniAnagraficaPaziente(String email) {
+        Map<String, String> datiAnagrafici = new HashMap<>();
+
+        if (email == null || email.trim().isEmpty()) {
+            return datiAnagrafici;
+        }
+
+
+        Paziente p = gestorePersistenza.cercaPrimoPerCampi(
+                Paziente.class,
+                Map.of("email", email.trim())
+        );
+
+        // Trasformiamo i dati dell'Entity in stringhe semplici dentro la mappa
+        if (p != null) {
+            datiAnagrafici.put("nome", p.getNome());
+            datiAnagrafici.put("cognome", p.getCognome());
+            datiAnagrafici.put("email", p.getEmail());
+        }
+
+        return datiAnagrafici;
+    }
 }

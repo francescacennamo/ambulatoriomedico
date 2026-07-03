@@ -53,10 +53,29 @@ public class PrenotazioneForm {
     private Map<Long, String> mappaMedici;
     private Map<Long, String> mappaFasceOrarie; // ID Fascia -> Orario (es: "09:00 - 09:30")
 
+    private String nomePazienteLoggato;
+    private String cognomePazienteLoggato;
+    private String emailPazienteLoggato;
+
     public PrenotazioneForm() {
+        this("", "", "");
+    }
+    public PrenotazioneForm(String nome, String cognome, String email) {
         $$$setupUI$$$();
         this.controller = new PrenotazioneController();
+        this.nomePazienteLoggato = nome;
+        this.cognomePazienteLoggato = cognome;
+        this.emailPazienteLoggato = email;
 
+        // Autocompiliamo i campi di testo grafici della form
+        textNome.setText(nome);
+        textCognome.setText(cognome);
+        textEmail.setText(email);
+
+        // Disabilitiamo la modifica manuale per non alterare l'identità del richiedente
+        textNome.setEditable(false);
+        textCognome.setEditable(false);
+        textEmail.setEditable(false);
         Date oggi = new Date();
 
         Calendar cal = Calendar.getInstance();
@@ -177,7 +196,7 @@ public class PrenotazioneForm {
                     win.dispose();
                 }
                 SwingUtilities.invokeLater(() -> {
-                    new PazienteForm().apriForm();
+                    new PazienteForm(nomePazienteLoggato, cognomePazienteLoggato, emailPazienteLoggato).apriForm();
                 });
             }
         });

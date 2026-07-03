@@ -16,10 +16,15 @@ public class PazienteForm {
     private JButton prenotaVisitaButton;
     private JButton leMieVisiteButton;
 
-    // Questa variabile non ti serve più, usiamo la ricerca dinamica dei componenti
-    // private JFrame currentFrame;
 
-    public PazienteForm() {
+    private String nomeLoggato;
+    private String cognomeLoggato;
+    private String emailLoggato;
+
+    public PazienteForm(String nome, String cognome, String email) {
+        this.nomeLoggato = nome;
+        this.cognomeLoggato = cognome;
+        this.emailLoggato = email;
 
         prenotaVisitaButton.addActionListener(e -> {
             // Chiude la finestra attuale in modo sicuro e dinamico
@@ -28,7 +33,7 @@ public class PazienteForm {
                 win.dispose();
             }
             SwingUtilities.invokeLater(() -> {
-                new PrenotazioneForm().apriPrenotazioneForm();
+                new PrenotazioneForm(nomeLoggato, cognomeLoggato, emailLoggato).apriPrenotazioneForm();
             });
         });
 

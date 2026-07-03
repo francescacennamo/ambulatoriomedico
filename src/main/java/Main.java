@@ -16,12 +16,12 @@ public class Main {
                     // Istanziamo la Boundary.
                     // Sarà LEI, al suo interno, a istanziare il proprio Controller,
                     // rispettando il flusso: Boundary -> Controller -> Entity/Database.
-                    PrenotazioneForm form = new PrenotazioneForm();
+                    //PrenotazioneForm form = new PrenotazioneForm();
 
                     // Creazione del contenitore grafico standard
                     JFrame frame = new JFrame("Test Prenotazione Form");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    frame.setContentPane(form.getContentPane());
+                   // frame.setContentPane(form.getContentPane());
 
                     frame.pack();
                     frame.setLocationRelativeTo(null);

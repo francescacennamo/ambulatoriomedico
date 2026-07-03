@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
+import java.util.Map;
 
 public class LoginForm {
 
@@ -79,11 +80,17 @@ public class LoginForm {
                 break;
 
             case "PAZIENTE":
+                // Chiediamo al controller la mappa di stringhe (approccio BCED puro)
+                Map<String, String> anagrafica = controller.ottieniAnagraficaPaziente(email.trim());
 
-                PazienteForm pazienteForm = new PazienteForm();
+                // Estraiamo i valori con dei fallback di sicurezza se la mappa fosse vuota
+                String nomePaziente = anagrafica.getOrDefault("nome", "Utente");
+                String cognomePaziente = anagrafica.getOrDefault("cognome", "Paziente");
+                String emailPaziente = anagrafica.getOrDefault("email", email.trim());
 
-                frame.setTitle("Area Paziente");
-                frame.setContentPane(pazienteForm.getContentPane());
+                // Passiamo i dati nativi (String) al costruttore di PazienteForm
+                PazienteForm pazienteForm = new PazienteForm(nomePaziente, cognomePaziente, emailPaziente);
+                pazienteForm.apriForm();
                 break;
 
             default:
