@@ -111,6 +111,7 @@ public class PrenotazioneForm {
                 if (medicoSelezionato != null) {
                     Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
                     System.out.println("ID Medico selezionato: " + idMedico);
+                    popolaFasceOrarie(idMedico);
                 } else {
                     cmbFasciaOraria.removeAllItems();
                 }
