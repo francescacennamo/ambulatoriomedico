@@ -11,10 +11,10 @@
       <font/>
       <foreground color="-14793370"/>
       <inheritsPopupMenu value="false"/>
-      <maximumSize width="650" height="370"/>
-      <minimumSize width="650" height="370"/>
+      <maximumSize width="650" height="450"/>
+      <minimumSize width="650" height="450"/>
       <opaque value="true"/>
-      <preferredSize width="650" height="370"/>
+      <preferredSize width="650" height="450"/>
       <requestFocusEnabled value="true"/>
       <visible value="true"/>
     </properties>

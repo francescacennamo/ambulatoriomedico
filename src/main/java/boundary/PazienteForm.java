@@ -1,6 +1,5 @@
 package boundary;
 
-import entity.Paziente;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -17,22 +16,28 @@ public class PazienteForm {
     private JButton prenotaVisitaButton;
     private JButton leMieVisiteButton;
 
-    private Paziente pazienteLoggato;
-    private JFrame currentFrame;
+    // Questa variabile non ti serve più, usiamo la ricerca dinamica dei componenti
+    // private JFrame currentFrame;
 
     public PazienteForm() {
-    }
-
-    public PazienteForm(Paziente paziente) {
-        this.pazienteLoggato = paziente;
 
         prenotaVisitaButton.addActionListener(e -> {
-            currentFrame.dispose();
-            // qui in futuro: apri la form di scelta specializzazione
+            // Chiude la finestra attuale in modo sicuro e dinamico
+            Window win = SwingUtilities.getWindowAncestor(contentPane);
+            if (win != null) {
+                win.dispose();
+            }
+            SwingUtilities.invokeLater(() -> {
+                new PrenotazioneForm().apriPrenotazioneForm();
+            });
         });
 
         logoutButton.addActionListener(e -> {
-            currentFrame.dispose();
+            // Chiude la finestra attuale in modo sicuro e dinamico
+            Window win = SwingUtilities.getWindowAncestor(contentPane);
+            if (win != null) {
+                win.dispose();
+            }
             SwingUtilities.invokeLater(() -> {
                 new LoginForm().apriLoginForm();
             });
@@ -55,8 +60,6 @@ public class PazienteForm {
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-        this.currentFrame = frame;
         return frame;
     }
 
@@ -149,5 +152,4 @@ public class PazienteForm {
     public JComponent $$$getRootComponent$$$() {
         return contentPane;
     }
-
 }

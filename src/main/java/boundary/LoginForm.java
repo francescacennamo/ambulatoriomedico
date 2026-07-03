@@ -108,7 +108,7 @@ public class LoginForm {
         }
 
     public JFrame apriLoginForm() {
-        JFrame frame = new JFrame("Ambulatorio Vita Nova");
+        JFrame frame = new JFrame("Ambulatorio Salus");
         frame.setContentPane(contentPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
@@ -120,7 +120,7 @@ public class LoginForm {
 
     public static void main(String[] args) {
 
-        JFrame frame = new JFrame("Ambulatorio Vita Nova");
+        JFrame frame = new JFrame("Ambulatorio Salus");
 
         frame.setContentPane(new LoginForm().contentPane);
 

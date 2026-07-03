@@ -59,17 +59,14 @@ public class PrenotazioneForm {
 
         Date oggi = new Date();
 
-// Definisci i limiti (opzionale): es. Non puoi prenotare nel passato
         Calendar cal = Calendar.getInstance();
         Date inizio = cal.getTime(); // Oggi
         cal.add(Calendar.YEAR, 2);
         Date fine = cal.getTime();   // Tra due anni
 
-// Crea il modello per la data (Valore iniziale, Minimo, Massimo, Campo da incrementare)
         SpinnerDateModel dateModel = new SpinnerDateModel(oggi, inizio, fine, Calendar.DAY_OF_MONTH);
         spinnerData.setModel(dateModel);
 
-// Scegli il formato di visualizzazione (es. 25/12/2026)
         JSpinner.DateEditor editor = new JSpinner.DateEditor(spinnerData, "dd/MM/yyyy");
         spinnerData.setEditor(editor);
 
@@ -78,26 +75,21 @@ public class PrenotazioneForm {
         cmbSpecializzazioni.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Recuperiamo il nome selezionato (es. "Cardiologia")
                 String nomeSelezionato = (String) cmbSpecializzazioni.getSelectedItem();
-
                 if (nomeSelezionato != null) {
-                    // Troviamo l'ID corrispondente a quel nome cercando nella mappa
                     Long idSelezionato = trovaIdSpecDaNome(nomeSelezionato);
-
                     if (idSelezionato != null) {
-                        // Passiamo l'ID al metodo che caricherà i medici (molto più sicuro del nome!)
                         popolaMedici(idSelezionato);
                     }
                 }
             }
         });
+
         cmbMediciPerSpec.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
                 if (medicoSelezionato != null) {
-                    // Qui trovi l'ID del medico selezionato se ti servirà per salvare la prenotazione
                     Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
                     System.out.println("ID Medico selezionato: " + idMedico);
                 } else {
@@ -105,10 +97,10 @@ public class PrenotazioneForm {
                 }
             }
         });
+
         siCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Controlliamo se la checkbox è spuntata (true o false)
                 boolean spuntata = siCheckBox.isSelected();
 
                 // Mostriamo o nascondiamo i campi di conseguenza
@@ -118,24 +110,28 @@ public class PrenotazioneForm {
                 textCognomeAltro.setVisible(spuntata);
 
                 // Chiediamo al pannello principale di ricalcolare il layout grafico
-                // per evitare che i componenti si sovrappongano o lascino buchi bianchi
                 contentPane.revalidate();
                 contentPane.repaint();
+
+                // MODIFICA: Ridimensiona dinamicamente la finestra fissa (anche se setResizable è false)
+                Window win = SwingUtilities.getWindowAncestor(contentPane);
+                if (win != null) {
+                    win.pack();
+                }
             }
         });
+
         spinnerData.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                // Ogni volta che la data cambia, controlliamo se c'è un medico selezionato
                 String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
-
                 if (medicoSelezionato != null) {
                     Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
-                    // Aggiorna le fasce orarie disponibili per la NUOVA data selezionata
                     popolaFasceOrarie(idMedico);
                 }
             }
         });
+
         confermaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -155,33 +151,34 @@ public class PrenotazioneForm {
                 String nomeAltro = textNomeAltro.getText().trim();
                 String cognomeAltro = textCognomeAltro.getText().trim();
 
-                // Validazione se prenota per un terzo
                 if (prenotaPerAltro && (nomeAltro.isEmpty() || cognomeAltro.isEmpty())) {
                     JOptionPane.showMessageDialog(contentPane, "Inserisci Nome e Cognome della persona per cui stai prenotando.", "Dati Mancanti", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
-                // Chiamata al controller
                 boolean successo = controller.confermaPrenotazione(idMedico, idFascia, emailLoggato, prenotaPerAltro, nomeAltro, cognomeAltro);
 
                 if (successo) {
                     JOptionPane.showMessageDialog(contentPane, "Visita prenotata con successo!", "Conferma", JOptionPane.INFORMATION_MESSAGE);
                     if (idMedico != null) {
-                        popolaFasceOrarie(idMedico); // Aggiorna la combo box nascondendo il turno preso
+                        popolaFasceOrarie(idMedico);
                     }
                 } else {
                     JOptionPane.showMessageDialog(contentPane, "Impossibile completare la prenotazione. Controllare i dati.", "Errore", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
+
         annullaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Chiude la finestra corrente in cui si trova il contentPane
                 Window win = SwingUtilities.getWindowAncestor(contentPane);
                 if (win != null) {
                     win.dispose();
                 }
+                SwingUtilities.invokeLater(() -> {
+                    new PazienteForm().apriForm();
+                });
             }
         });
     }
@@ -191,12 +188,8 @@ public class PrenotazioneForm {
     }
 
     private void popolaSpecializzazioni() {
-        // Chiediamo la mappa al controller (contiene ID -> Nome)
         this.mappaSpecializzazioni = controller.ottieniMappaSpecializzazioni();
-
         cmbSpecializzazioni.removeAllItems();
-
-        // Prendiamo solo i VALORI (cioè i nomi delle specializzazioni) e li mettiamo nella tendina
         for (String nome : mappaSpecializzazioni.values()) {
             cmbSpecializzazioni.addItem(nome);
         }
@@ -206,7 +199,7 @@ public class PrenotazioneForm {
     private Long trovaIdSpecDaNome(String nomeCercato) {
         for (Map.Entry<Long, String> entry : mappaSpecializzazioni.entrySet()) {
             if (entry.getValue().equals(nomeCercato)) {
-                return entry.getKey(); // Restituisce l'ID (es. 3)
+                return entry.getKey();
             }
         }
         return null;
@@ -214,13 +207,8 @@ public class PrenotazioneForm {
 
     private void popolaMedici(Long idSpecializzazione) {
         cmbMediciPerSpec.removeAllItems();
-        // Chiediamo al controller i medici filtrati per l'ID della specializzazione
         this.mappaMedici = controller.ottieniMediciPerSpecializzazione(idSpecializzazione);
-
-        // Svuotiamo la combobox dei medici (cancella i medici della vecchia selezione)
         cmbMediciPerSpec.removeAllItems();
-
-        // Inseriamo i nomi dei medici nella seconda ComboBox
         for (String nomeMedico : mappaMedici.values()) {
             cmbMediciPerSpec.addItem(nomeMedico);
         }
@@ -237,25 +225,19 @@ public class PrenotazioneForm {
 
     private void popolaFasceOrarie(Long idMedico) {
         cmbFasciaOraria.removeAllItems();
-
         if (idMedico == null) return;
 
-        // 1. Recupera la data dallo JSpinner e convertila in LocalDate
         Date dateDaSpinner = (Date) spinnerData.getValue();
         LocalDate localDate = dateDaSpinner.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-        // 2. Chiedi al controller le fasce DISPONIBILI
         this.mappaFasceOrarie = controller.ottieniFasceDisponibili(idMedico, localDate);
-
-        // 3. Inserisci i testi orari nella ComboBox
         for (String orario : mappaFasceOrarie.values()) {
             cmbFasciaOraria.addItem(orario);
         }
     }
 
-    // Metodo di utilità per recuperare l'ID della fascia quando l'utente premerà "Conferma"
     private Long trovaIdFasciaDaOrario(String orarioCercato) {
         if (mappaFasceOrarie == null) return null;
         for (Map.Entry<Long, String> entry : mappaFasceOrarie.entrySet()) {
@@ -264,6 +246,20 @@ public class PrenotazioneForm {
             }
         }
         return null;
+    }
+
+    public JFrame apriPrenotazioneForm() {
+        JFrame frame = new JFrame("Prenotazione Visita");
+        frame.setContentPane(contentPane);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // MODIFICA: Impedisce all'utente di ridimensionare la finestra trascinando i bordi
+        frame.setResizable(false);
+
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        return frame;
     }
 
     /**
@@ -282,10 +278,10 @@ public class PrenotazioneForm {
         if (contentPaneFont != null) contentPane.setFont(contentPaneFont);
         contentPane.setForeground(new Color(-14793370));
         contentPane.setInheritsPopupMenu(false);
-        contentPane.setMaximumSize(new Dimension(650, 370));
-        contentPane.setMinimumSize(new Dimension(650, 370));
+        contentPane.setMaximumSize(new Dimension(650, 450));
+        contentPane.setMinimumSize(new Dimension(650, 450));
         contentPane.setOpaque(true);
-        contentPane.setPreferredSize(new Dimension(650, 370));
+        contentPane.setPreferredSize(new Dimension(650, 450));
         contentPane.setRequestFocusEnabled(true);
         contentPane.setVisible(true);
         labelTitolo = new JLabel();
