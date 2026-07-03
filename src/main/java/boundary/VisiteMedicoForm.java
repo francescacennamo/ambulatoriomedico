@@ -1,25 +1,22 @@
 package boundary;
 
 import entity.Medico;
-import entity.Visita;
 import control.VisitaController;
-
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 
 public class VisiteMedicoForm {
     private JPanel contentPane;
     private JScrollPane scorrimento;
     private JPanel PanelCentrale;
-
     private Medico medicoLoggato;
     private JFrame previousFrame;
     private JFrame currentFrame;
@@ -50,28 +47,42 @@ public class VisiteMedicoForm {
     }
 
     private void caricaVisite() {
+
         VisitaController controller = new VisitaController();
 
         PanelCentrale.setLayout(new BoxLayout(PanelCentrale, BoxLayout.Y_AXIS));
 
-        List<Visita> visite = controller.getVisitePerMedico(medicoLoggato.getId());
+        List<Long> ids =
+                controller.getIdVisitePerMedico(medicoLoggato.getId());
 
-        if (!visite.isEmpty()) {
-            for (Visita v : visite) {
-                JPanel scheda = creaSchedaVisita(v);
+        if (!ids.isEmpty()) {
+
+            for (Long id : ids) {
+
+                Map<String,Object> visita =
+                        controller.getDettaglioVisita(id);
+
+                JPanel scheda =
+                        creaSchedaVisita(visita);
+
                 PanelCentrale.add(scheda);
                 PanelCentrale.add(Box.createVerticalStrut(12));
             }
+
         } else {
-            JLabel emptyLbl = new JLabel("Nessuna visita prenotata");
-            emptyLbl.setFont(new Font("Arial", Font.ITALIC, 16));
-            emptyLbl.setForeground(new Color(0x999999));
+
+            JLabel emptyLbl =
+                    new JLabel("Nessuna visita prenotata");
+
             emptyLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+
             PanelCentrale.add(emptyLbl);
+
         }
+
     }
 
-    private JPanel creaSchedaVisita(Visita v) {
+    private JPanel creaSchedaVisita(Map<String,Object> visita){
         JPanel scheda = new JPanel();
         scheda.setLayout(new BoxLayout(scheda, BoxLayout.Y_AXIS));
         scheda.setBackground(Color.WHITE);
@@ -82,11 +93,11 @@ public class VisiteMedicoForm {
         scheda.setAlignmentX(Component.LEFT_ALIGNMENT);
         scheda.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
 
-        JLabel pazienteLbl = new JLabel(v.getPaziente().getNome() + " " + v.getPaziente().getCognome());
+        JLabel pazienteLbl = new JLabel( (String) visita.get("paziente"));
         pazienteLbl.setFont(new Font("Arial", Font.BOLD, 18));
         pazienteLbl.setForeground(new Color(-14793370));
 
-        JLabel dataOrarioLbl = new JLabel(v.getFasciaOraria().getData() + "  •  " + v.getFasciaOraria().getOrario());
+        JLabel dataOrarioLbl = new JLabel(visita.get("data") + "  •  " + visita.get("orario"));
         dataOrarioLbl.setFont(new Font("Arial", Font.PLAIN, 14));
         dataOrarioLbl.setForeground(new Color(0x666666));
 

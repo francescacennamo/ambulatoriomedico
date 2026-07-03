@@ -1,22 +1,23 @@
 package control;
 
-import database.GestorePersistenza;
-import entity.Visita;
+import entity.GestoreVisite;
+
 import java.util.List;
 import java.util.Map;
 
 public class VisitaController {
 
-    private final GestorePersistenza gestorePersistenza;
+    public List<Long> getIdVisitePerMedico(Long idMedico) {
 
-    public VisitaController() {
-        this.gestorePersistenza = new GestorePersistenza();
+        return GestoreVisite
+                .getInstance()
+                .getIdVisitePerMedico(idMedico);
     }
 
-    public List<Visita> getVisitePerMedico(Long idMedico) {
-        return gestorePersistenza.cercaPerCampi(
-                Visita.class,
-                Map.of("medico.id", idMedico)
-        );
+    public Map<String, Object> getDettaglioVisita(Long idVisita) {
+
+        return GestoreVisite
+                .getInstance()
+                .getDettaglioVisita(idVisita);
     }
 }
