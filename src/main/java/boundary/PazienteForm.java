@@ -20,6 +20,9 @@ public class PazienteForm {
     private Paziente pazienteLoggato;
     private JFrame currentFrame;
 
+    public PazienteForm() {
+    }
+
     public PazienteForm(Paziente paziente) {
         this.pazienteLoggato = paziente;
 
@@ -38,6 +41,10 @@ public class PazienteForm {
         leMieVisiteButton.addActionListener(e -> {
             // qui in futuro: apri la lista visite del paziente
         });
+    }
+
+    public JPanel getContentPane() {
+        return contentPane;
     }
 
     public JFrame apriForm() {

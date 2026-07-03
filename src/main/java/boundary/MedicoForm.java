@@ -14,10 +14,18 @@ import java.util.Locale;
 public class MedicoForm {
     private JButton logoutButton;
     private JButton leMieVisiteButton;
+
+    public JPanel getContentPane() {
+        return contentPane;
+    }
+
     private JPanel contentPane;
 
     private Medico medicoLoggato;
     private JFrame currentFrame;
+
+    public MedicoForm() {
+    }
 
     public MedicoForm(Medico medico) {
         this.medicoLoggato = medico;

@@ -1,7 +1,6 @@
 package boundary;
 
 import control.LoginController;
-import entity.Utente;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -53,33 +52,60 @@ public class LoginForm {
 
         LoginController controller = new LoginController();
 
-        Utente utente = controller.login(email.trim(), password);
+        String tipoUtente = controller.login(email.trim(), password);
 
-        if (utente != null) {
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Login effettuato correttamente",
-                    "Successo",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-            /*
-             * Qui successivamente apriremo:
-             *
-             * FormAmministratore
-             * FormMedico
-             * FormPaziente
-             */
-
-        } else {
+        if (tipoUtente == null) {
 
             JOptionPane.showMessageDialog(
                     null,
                     "Email o password non valide",
                     "Errore",
-                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            return;
         }
-    }
+
+        JFrame frame = new JFrame();
+
+        switch (tipoUtente) {
+
+            case "MEDICO":
+
+                MedicoForm medicoForm = new MedicoForm();
+
+                frame.setTitle("Area Medico");
+                frame.setContentPane(medicoForm.getContentPane());
+                break;
+
+            case "PAZIENTE":
+
+                PazienteForm pazienteForm = new PazienteForm();
+
+                frame.setTitle("Area Paziente");
+                frame.setContentPane(pazienteForm.getContentPane());
+                break;
+
+            default:
+
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Ruolo utente non riconosciuto",
+                        "Errore",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+        }
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+            // Chiude la finestra di login
+            SwingUtilities.getWindowAncestor(contentPane).dispose();
+
+        }
 
     public JFrame apriLoginForm() {
         JFrame frame = new JFrame("Ambulatorio Vita Nova");

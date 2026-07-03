@@ -3,33 +3,54 @@ package control; // Convenzione Java: i pacchetti vanno scritti in minuscolo
 import database.GestorePersistenza;
 import entity.Utente;
 import java.util.Map;
+import java.util.HashMap;
 
 public class LoginController {
 
-    // MOTIVAZIONE BCED: Il controller possiede un riferimento al GestorePersistenza.
-    // In questo modo il livello di Control coordina l'accesso ai dati senza che il
-    // livello Database debba conoscere l'esistenza della classe Utente.
+    // Gestore della persistenza
     private final GestorePersistenza gestorePersistenza;
+
+    // Mappa che associa il nome della classe al ruolo
+    private final Map<String, String> ruoli;
 
     // Costruttore
     public LoginController() {
+
         this.gestorePersistenza = new GestorePersistenza();
+
+        this.ruoli = new HashMap<>();
+
+        ruoli.put("entity.Medico", "MEDICO");
+        ruoli.put("entity.Paziente", "PAZIENTE");
+        ruoli.put("entity.Amministratore", "AMMINISTRATORE");
     }
 
-    public Utente login(String email, String password) {
+    /**
+     * Esegue il login e restituisce il ruolo dell'utente autenticato.
+     *
+     * @param email email inserita
+     * @param password password inserita
+     * @return MEDICO, PAZIENTE, AMMINISTRATORE oppure null se il login fallisce
+     */
+    public String login(String email, String password) {
 
-        // 1. Creiamo la mappa con i filtri per la clausola WHERE.
-        // Le chiavi ("email", "password") devono corrispondere esattamente
-        // ai nomi degli attributi privati definiti nella tua classe Entity Utente.
-        Map<String, Object> criteriLogin = Map.of(
-                "email", email,
-                "password", password
+        Map<String, Object> criteriLogin = new HashMap<>();
+
+        criteriLogin.put("email", email);
+        criteriLogin.put("password", password);
+
+        Utente utente = gestorePersistenza.cercaPrimoPerCampi(
+                Utente.class,
+                criteriLogin
         );
 
-        // 2. Sfruttiamo il metodo generico del gestore.
-        // Gli passiamo Utente.class in modo che sappia su quale tabella cercare,
-        // e la mappa con i criteri. Internamente farà la query e restituirà
-        // l'utente se trovato, oppure null se le credenziali sono errate.
-        return gestorePersistenza.cercaPrimoPerCampi(Utente.class, criteriLogin);
+        if (utente == null) {
+            return null;
+        }
+
+        String nomeClasse = utente.getClass().getName();
+
+        return ruoli.get(nomeClasse);
     }
+
 }
