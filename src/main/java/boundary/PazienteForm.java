@@ -9,24 +9,48 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.util.Locale;
+import javax.swing.ImageIcon;
+import java.net.URL;
 
 public class PazienteForm {
     private JPanel contentPane;
     private JButton logoutButton;
     private JButton prenotaVisitaButton;
     private JButton leMieVisiteButton;
+    private JLabel logoLabel;
+    private JTextPane textPane1;
+    private JTextArea textArea1;
 
 
     private String nomeLoggato;
     private String cognomeLoggato;
     private String emailLoggato;
     private String recapitoTelefonicoLoggato;
+
     public PazienteForm(String nome, String cognome, String email, String recapitoTelefonico) {
         this.nomeLoggato = nome;
         this.cognomeLoggato = cognome;
         this.emailLoggato = email;
-        this.recapitoTelefonicoLoggato=recapitoTelefonico;
+        this.recapitoTelefonicoLoggato = recapitoTelefonico;
+        URL imgURL = getClass().getResource("/logo.png");
 
+        if (imgURL != null) {
+
+            ImageIcon originalIcon = new ImageIcon(imgURL);
+
+
+            Image scaledImage = originalIcon.getImage().getScaledInstance(150, -1, Image.SCALE_SMOOTH);
+
+            ImageIcon resizedIcon = new ImageIcon(scaledImage);
+            logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
+            logoLabel.setText("");
+            logoLabel.setIcon(resizedIcon);
+
+        } else {
+            System.err.println("Errore: Impossibile trovare il file del logo.");
+        }
         prenotaVisitaButton.addActionListener(e -> {
             // Chiude la finestra attuale in modo sicuro e dinamico
             Window win = SwingUtilities.getWindowAncestor(contentPane);
@@ -85,49 +109,75 @@ public class PazienteForm {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(5, 6, new Insets(20, 20, 20, 20), -1, -1));
+        contentPane.setLayout(new GridBagLayout());
+        contentPane.setBackground(new Color(-14793370));
         Font contentPaneFont = this.$$$getFont$$$("Arial", Font.BOLD, 24, contentPane.getFont());
         if (contentPaneFont != null) contentPane.setFont(contentPaneFont);
-        contentPane.setForeground(new Color(-16764058));
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        contentPane.add(spacer1, new GridConstraints(0, 1, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        Font label1Font = this.$$$getFont$$$("Arial", Font.BOLD, 24, label1.getFont());
-        if (label1Font != null) label1.setFont(label1Font);
-        label1.setForeground(new Color(-16764058));
-        label1.setText("CENTRO MEDICO SALUS");
-        contentPane.add(label1, new GridConstraints(1, 1, 1, 5, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        Font label2Font = this.$$$getFont$$$("Arial", Font.ITALIC, 20, label2.getFont());
-        if (label2Font != null) label2.setFont(label2Font);
-        label2.setForeground(new Color(-5329488));
-        label2.setText("Area Riservata Paziente");
-        contentPane.add(label2, new GridConstraints(2, 1, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 1, new Insets(20, 20, 20, 20), -1, -1, true, true));
-        panel2.setBackground(new Color(-14793370));
-        contentPane.add(panel2, new GridConstraints(4, 1, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setBackground(new Color(-1));
-        Font label3Font = this.$$$getFont$$$("Arial", Font.BOLD, 22, label3.getFont());
-        if (label3Font != null) label3.setFont(label3Font);
-        label3.setForeground(new Color(-1));
-        label3.setText("<html>Specialisti nella diagnosi<br>al servizio della tua salute</html>");
-        panel2.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        logoutButton = new JButton();
-        logoutButton.setText("Logout");
-        contentPane.add(logoutButton, new GridConstraints(3, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        leMieVisiteButton = new JButton();
-        leMieVisiteButton.setText("Le mie visite");
-        contentPane.add(leMieVisiteButton, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        contentPane.setForeground(new Color(-14793370));
+        contentPane.setPreferredSize(new Dimension(800, 600));
         prenotaVisitaButton = new JButton();
+        prenotaVisitaButton.setBackground(new Color(-10828087));
+        Font prenotaVisitaButtonFont = this.$$$getFont$$$("Arial", Font.BOLD, 14, prenotaVisitaButton.getFont());
+        if (prenotaVisitaButtonFont != null) prenotaVisitaButton.setFont(prenotaVisitaButtonFont);
+        prenotaVisitaButton.setForeground(new Color(-1));
         prenotaVisitaButton.setText("Prenota visita");
-        contentPane.add(prenotaVisitaButton, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        contentPane.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        GridBagConstraints gbc;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        contentPane.add(prenotaVisitaButton, gbc);
+        leMieVisiteButton = new JButton();
+        leMieVisiteButton.setBackground(new Color(-10828087));
+        Font leMieVisiteButtonFont = this.$$$getFont$$$("Arial", Font.BOLD, 14, leMieVisiteButton.getFont());
+        if (leMieVisiteButtonFont != null) leMieVisiteButton.setFont(leMieVisiteButtonFont);
+        leMieVisiteButton.setForeground(new Color(-1));
+        leMieVisiteButton.setText("Le mie visite");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPane.add(leMieVisiteButton, gbc);
+        logoutButton = new JButton();
+        logoutButton.setBackground(new Color(-10828087));
+        Font logoutButtonFont = this.$$$getFont$$$("Arial", Font.BOLD, 14, logoutButton.getFont());
+        if (logoutButtonFont != null) logoutButton.setFont(logoutButtonFont);
+        logoutButton.setForeground(new Color(-1));
+        logoutButton.setText("Logout");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        contentPane.add(logoutButton, gbc);
+        logoLabel = new JLabel();
+        Font logoLabelFont = this.$$$getFont$$$("Arial", Font.BOLD, 24, logoLabel.getFont());
+        if (logoLabelFont != null) logoLabel.setFont(logoLabelFont);
+        logoLabel.setForeground(new Color(-16764058));
+        logoLabel.setText("");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 0, 10, 0);
+        contentPane.add(logoLabel, gbc);
+        textPane1 = new JTextPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPane.add(textPane1, gbc);
+        textArea1 = new JTextArea();
+        textArea1.setText("");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 3;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPane.add(textArea1, gbc);
     }
 
     /**
@@ -158,4 +208,5 @@ public class PazienteForm {
     public JComponent $$$getRootComponent$$$() {
         return contentPane;
     }
+
 }
