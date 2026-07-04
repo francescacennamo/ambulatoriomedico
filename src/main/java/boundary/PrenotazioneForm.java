@@ -333,10 +333,10 @@ public class PrenotazioneForm {
         if (contentPaneFont != null) contentPane.setFont(contentPaneFont);
         contentPane.setForeground(new Color(-14793370));
         contentPane.setInheritsPopupMenu(false);
-        contentPane.setMaximumSize(new Dimension(700, 660));
+        contentPane.setMaximumSize(new Dimension(900, 660));
         contentPane.setMinimumSize(new Dimension(700, 660));
         contentPane.setOpaque(true);
-        contentPane.setPreferredSize(new Dimension(700, 660));
+        contentPane.setPreferredSize(new Dimension(800, 600));
         contentPane.setRequestFocusEnabled(true);
         contentPane.setVisible(true);
         labelTitolo = new JLabel();
@@ -599,7 +599,7 @@ public class PrenotazioneForm {
         gbc.gridx = 1;
         gbc.gridy = 14;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(30, 0, 10, 0);
+        gbc.insets = new Insets(30, 40, 10, 0);
         contentPane.add(confermaButton, gbc);
         annullaButton = new JButton();
         annullaButton.setText("Annulla");
@@ -607,7 +607,7 @@ public class PrenotazioneForm {
         gbc.gridx = 1;
         gbc.gridy = 15;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 0, 10, 0);
+        gbc.insets = new Insets(0, 40, 10, 0);
         contentPane.add(annullaButton, gbc);
         logoLabel = new JLabel();
         Font logoLabelFont = this.$$$getFont$$$("Felix Titling", -1, 28, logoLabel.getFont());
@@ -618,7 +618,7 @@ public class PrenotazioneForm {
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.NORTH;
-        gbc.insets = new Insets(0, 0, 35, 0);
+        gbc.insets = new Insets(0, 40, 35, 0);
         contentPane.add(logoLabel, gbc);
         labelTel = new JLabel();
         Font labelTelFont = this.$$$getFont$$$("Arial", -1, 16, labelTel.getFont());

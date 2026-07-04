@@ -1,5 +1,7 @@
 package boundary;
 
+import com.intellij.uiDesigner.core.GridLayoutManager;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
@@ -180,10 +182,11 @@ public class PazienteForm {
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 30, 35, 0);
+        gbc.insets = new Insets(0, 45, 35, 0);
         contentPane.add(logoLabel, gbc);
         textPane1 = new JTextPane();
-        textPane1.setBackground(new Color(-1));
+        textPane1.setBackground(new Color(-2310814));
+        textPane1.setForeground(new Color(-2310814));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -229,20 +232,22 @@ public class PazienteForm {
         Font testoLabelFont = this.$$$getFont$$$("Arial Rounded MT Bold", Font.PLAIN, 14, testoLabel.getFont());
         if (testoLabelFont != null) testoLabel.setFont(testoLabelFont);
         testoLabel.setForeground(new Color(-1));
-        testoLabel.setText("La tua salute è al centro del nostro ");
+        testoLabel.setText("La tua salute in mani sicure");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 30, 0, 0);
+        gbc.insets = new Insets(150, 30, 0, 0);
         panel1.add(testoLabel, gbc);
-        final JLabel label1 = new JLabel();
-        label1.setText("impegno quotidiano.");
+        final JTextPane textPane2 = new JTextPane();
+        textPane2.setBackground(new Color(-2310814));
+        textPane2.setForeground(new Color(-2310814));
         gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        panel1.add(label1, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel1.add(textPane2, gbc);
     }
 
     /**
