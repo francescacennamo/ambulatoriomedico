@@ -26,20 +26,16 @@ public class GestoreVisite {
         return instance;
     }
 
-    /**
-     * Restituisce gli identificativi delle visite del medico.
-     */
     public List<Long> getIdVisitePerMedico(Long idMedico) {
-
-        Medico medico = gestorePersistenza.trovaPerId(Medico.class, idMedico);
 
         List<Long> ids = new ArrayList<>();
 
-        if (medico == null) {
-            return ids;
-        }
+        List<Visita> visite = gestorePersistenza.cercaPerCampi(
+                Visita.class,
+                Map.of("medico.id", idMedico)
+        );
 
-        for (Visita visita : medico.getListaVisite()) {
+        for (Visita visita : visite) {
             ids.add(visita.getId());
         }
 

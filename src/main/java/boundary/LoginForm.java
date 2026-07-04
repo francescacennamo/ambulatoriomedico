@@ -92,16 +92,23 @@ public class LoginForm {
             return;
         }
 
-        JFrame frame = new JFrame();
 
         switch (tipoUtente) {
 
             case "MEDICO":
 
-                MedicoForm medicoForm = new MedicoForm();
+                Map<String,String> dati =
+                        controller.ottieniAnagraficaMedico(email.trim());
 
-                frame.setTitle("Area Medico");
-                frame.setContentPane(medicoForm.getContentPane());
+                MedicoForm medicoForm =  new MedicoForm(
+                                Long.parseLong(dati.get("id")),
+                                dati.get("nome"),
+                                dati.get("cognome"),
+                                dati.get("email"),
+                                dati.get("recapito")
+                        );
+
+                medicoForm.apriForm();
                 break;
 
             case "PAZIENTE":
@@ -116,7 +123,7 @@ public class LoginForm {
                 // Passiamo i dati nativi (String) al costruttore di PazienteForm
                 PazienteForm pazienteForm = new PazienteForm(nomePaziente, cognomePaziente, emailPaziente, recapitoPaziente);
                 pazienteForm.apriForm();
-                break;
+               break;
 
             default:
 
@@ -129,10 +136,6 @@ public class LoginForm {
                 return;
         }
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
 
         // Chiude la finestra di login
         SwingUtilities.getWindowAncestor(contentPane).dispose();

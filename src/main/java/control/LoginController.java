@@ -3,7 +3,7 @@ package control; // Convenzione Java: i pacchetti vanno scritti in minuscolo
 import database.GestorePersistenza;
 import entity.Utente;
 import entity.Paziente; // Inserito l'import per l'entità Paziente
-
+import entity.Medico;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -91,5 +91,32 @@ public class LoginController {
         }
 
         return datiAnagrafici;
+    }
+
+    public Map<String,String> ottieniAnagraficaMedico(String email){
+
+        Map<String,String> dati = new HashMap<>();
+
+        if(email == null || email.isBlank()){
+            return dati;
+        }
+
+        Medico medico =
+                gestorePersistenza.cercaPrimoPerCampi(
+                        Medico.class,
+                        Map.of("email",email)
+                );
+
+        if(medico != null){
+
+            dati.put("id", medico.getId().toString());
+            dati.put("nome", medico.getNome());
+            dati.put("cognome", medico.getCognome());
+            dati.put("email", medico.getEmail());
+            dati.put("recapito", medico.getRecapitoTelefonico());
+
+        }
+
+        return dati;
     }
 }
