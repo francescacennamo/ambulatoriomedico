@@ -120,12 +120,11 @@ public class VisitaMedicoForm {
         stato.setForeground(new Color(33,150,243));
         stato.setFont(new Font("Arial", Font.BOLD, 13));
 
-        card.add(Box.createVerticalStrut(5));
-        card.add(stato);
-
         card.add(paziente);
         card.add(Box.createVerticalStrut(8));
         card.add(data);
+        card.add(Box.createVerticalStrut(5));
+        card.add(stato);
 
         return card;
     }
