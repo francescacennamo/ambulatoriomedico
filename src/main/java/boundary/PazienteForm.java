@@ -1,9 +1,5 @@
 package boundary;
 
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
-
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
@@ -19,7 +15,10 @@ public class PazienteForm {
     private JButton leMieVisiteButton;
     private JLabel logoLabel;
     private JTextPane textPane1;
-    private JTextArea textArea1;
+    private JLabel titoloLabel;
+    private JLabel disegnoLabel;
+    private JLabel testoLabel;
+    private JPanel labelTitolo;
 
 
     private String nomeLoggato;
@@ -32,14 +31,15 @@ public class PazienteForm {
         this.cognomeLoggato = cognome;
         this.emailLoggato = email;
         this.recapitoTelefonicoLoggato = recapitoTelefonico;
-        URL imgURL = getClass().getResource("/logo.png");
 
+        URL imgURL = getClass().getResource("/logo.png");
+        URL imgURL1 = getClass().getResource("/disegno2.png");
         if (imgURL != null) {
 
             ImageIcon originalIcon = new ImageIcon(imgURL);
 
 
-            Image scaledImage = originalIcon.getImage().getScaledInstance(150, -1, Image.SCALE_SMOOTH);
+            Image scaledImage = originalIcon.getImage().getScaledInstance(200, -1, Image.SCALE_SMOOTH);
 
             ImageIcon resizedIcon = new ImageIcon(scaledImage);
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -47,6 +47,23 @@ public class PazienteForm {
             // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
             logoLabel.setText("");
             logoLabel.setIcon(resizedIcon);
+
+        } else {
+            System.err.println("Errore: Impossibile trovare il file del logo.");
+        }
+        if (imgURL1 != null) {
+
+            ImageIcon originalIcon = new ImageIcon(imgURL1);
+
+
+            Image scaledImage = originalIcon.getImage().getScaledInstance(480, -1, Image.SCALE_SMOOTH);
+
+            ImageIcon resizedIcon = new ImageIcon(scaledImage);
+            disegnoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
+            disegnoLabel.setText("");
+            disegnoLabel.setIcon(resizedIcon);
 
         } else {
             System.err.println("Errore: Impossibile trovare il file del logo.");
@@ -163,21 +180,69 @@ public class PazienteForm {
         gbc.gridy = 0;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 0, 10, 0);
+        gbc.insets = new Insets(0, 30, 35, 0);
         contentPane.add(logoLabel, gbc);
         textPane1 = new JTextPane();
+        textPane1.setBackground(new Color(-1));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPane.add(textPane1, gbc);
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridBagLayout());
+        panel1.setBackground(new Color(-16240818));
+        Font panel1Font = this.$$$getFont$$$(null, -1, -1, panel1.getFont());
+        if (panel1Font != null) panel1.setFont(panel1Font);
+        panel1.setForeground(new Color(-1));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPane.add(panel1, gbc);
+        titoloLabel = new JLabel();
+        titoloLabel.setBackground(new Color(-14793370));
+        Font titoloLabelFont = this.$$$getFont$$$("Arial Rounded MT Bold", Font.BOLD, 20, titoloLabel.getFont());
+        if (titoloLabelFont != null) titoloLabel.setFont(titoloLabelFont);
+        titoloLabel.setForeground(new Color(-1));
+        titoloLabel.setText("Specialisti nella diagnosi al servizio della tua salute");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 120, 0, 0);
+        panel1.add(titoloLabel, gbc);
+        disegnoLabel = new JLabel();
+        disegnoLabel.setText("");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridheight = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(30, 0, 30, 0);
+        panel1.add(disegnoLabel, gbc);
+        testoLabel = new JLabel();
+        Font testoLabelFont = this.$$$getFont$$$("Arial Rounded MT Bold", Font.PLAIN, 14, testoLabel.getFont());
+        if (testoLabelFont != null) testoLabel.setFont(testoLabelFont);
+        testoLabel.setForeground(new Color(-1));
+        testoLabel.setText("La tua salute è al centro del nostro ");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.BOTH;
-        contentPane.add(textPane1, gbc);
-        textArea1 = new JTextArea();
-        textArea1.setText("");
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 30, 0, 0);
+        panel1.add(testoLabel, gbc);
+        final JLabel label1 = new JLabel();
+        label1.setText("impegno quotidiano.");
         gbc = new GridBagConstraints();
-        gbc.gridx = 2;
+        gbc.gridx = 1;
         gbc.gridy = 3;
-        gbc.fill = GridBagConstraints.BOTH;
-        contentPane.add(textArea1, gbc);
+        gbc.anchor = GridBagConstraints.WEST;
+        panel1.add(label1, gbc);
     }
 
     /**
