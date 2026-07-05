@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 import javax.swing.ImageIcon;
-import java.net.URL;
 
 public class LoginForm {
 
@@ -97,25 +96,26 @@ public class LoginForm {
 
             case "MEDICO":
 
-                Map<String,String> dati =
-                        controller.ottieniAnagraficaMedico(email.trim());
-
-                MedicoForm medicoForm =  new MedicoForm(
-                                Long.parseLong(dati.get("id")),
-                                dati.get("nome"),
-                                dati.get("cognome"),
-                                dati.get("email"),
-                                dati.get("recapito")
-                        );
+                Map<String,String> dati = controller.ottieniAnagraficaMedico(email.trim());
+                // Estraiamo i valori con dei fallback di sicurezza se la mappa fosse vuota
+                //Se il nome non esiste restituisce utente
+                String idMedico = dati.getOrDefault ("id", "0");
+                Long id = Long.parseLong(idMedico);
+                String nomeMedico = dati.getOrDefault("nome", "Utente");
+                String cognomeMedico = dati.getOrDefault("cognome", "Medico");
+                String emailMedico = dati.getOrDefault("email", email.trim());
+                String recapitoMedico = dati.getOrDefault("recapito", "");
+                MedicoForm medicoForm =  new MedicoForm(id, nomeMedico,cognomeMedico,emailMedico,recapitoMedico);
 
                 medicoForm.apriForm();
                 break;
 
             case "PAZIENTE":
-                // Chiediamo al controller la mappa di stringhe (approccio BCED puro)
+                // Chiediamo al controller la mappa di stringhe
                 Map<String, String> anagrafica = controller.ottieniAnagraficaPaziente(email.trim());
 
                 // Estraiamo i valori con dei fallback di sicurezza se la mappa fosse vuota
+                //Se il nome non esiste restituisce utente
                 String nomePaziente = anagrafica.getOrDefault("nome", "Utente");
                 String cognomePaziente = anagrafica.getOrDefault("cognome", "Paziente");
                 String emailPaziente = anagrafica.getOrDefault("email", email.trim());

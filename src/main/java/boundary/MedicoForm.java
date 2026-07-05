@@ -3,7 +3,6 @@ package boundary;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import entity.Medico;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -32,13 +31,8 @@ public class MedicoForm {
     private String recapito;
     private JFrame currentFrame;
 
-    public MedicoForm(Long idMedico,
-                      String nome,
-                      String cognome,
-                      String email,
-                      String recapito) {
-
-        this.idMedico = idMedico;
+    public MedicoForm(Long id, String nome, String cognome, String email, String recapito) {
+        this.idMedico=id;
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
@@ -54,7 +48,6 @@ public class MedicoForm {
 
         leMieVisiteButton.addActionListener(e -> {
             new VisitaMedicoForm(idMedico, currentFrame).apriForm();
-
         });
     }
 

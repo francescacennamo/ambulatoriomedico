@@ -27,6 +27,7 @@ public class VisitaMedicoForm {
 // DO NOT EDIT OR ADD ANY CODE HERE!
         $$$setupUI$$$();
     }
+
     public VisitaMedicoForm(Long idMedico, JFrame previousFrame) {
 
         this.idMedico = idMedico;
@@ -34,6 +35,7 @@ public class VisitaMedicoForm {
 
         scorrimento.getVerticalScrollBar().setUnitIncrement(20);
     }
+
     public JFrame apriForm() {
 
         JFrame frame = new JFrame("Le mie visite");
@@ -55,36 +57,29 @@ public class VisitaMedicoForm {
         return frame;
     }
     private void caricaVisite() {
-
+        //svuota il pannello
         PanelCentrale.removeAll();
-
-        PanelCentrale.setLayout(
-                new BoxLayout(PanelCentrale, BoxLayout.Y_AXIS)
-        );
+        //dice a swing di mettere le card una sotto l'altra
+        PanelCentrale.setLayout(new BoxLayout(PanelCentrale, BoxLayout.Y_AXIS));
 
         VisitaController controller = new VisitaController();
 
         List<Long> ids = controller.getIdVisitePerMedico(idMedico);
 
         for (Long id : ids) {
-
             Map<String,Object> visita =
                     controller.getDettaglioVisita(id);
-
             JPanel card = creaSchedaVisita(visita);
-
             PanelCentrale.add(card);
             //metto uno spazio tra una card e l'altra
             PanelCentrale.add(Box.createVerticalStrut(15));
         }
 
         if(ids.isEmpty()){
-
             JLabel lbl = new JLabel("Nessuna visita prenotata");
             lbl.setForeground(Color.WHITE);
             lbl.setFont(new Font("Arial", Font.BOLD, 18));
             lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-
             PanelCentrale.add(lbl);
         }
 
