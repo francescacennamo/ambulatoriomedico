@@ -1,6 +1,6 @@
 package boundary;
-import control.PrenotazioneController;
 
+import control.PrenotazioneController;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Map;
-
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.ImageIcon;
@@ -55,71 +54,48 @@ public class PrenotazioneForm {
     private PrenotazioneController controller;
     private Map<Long, String> mappaSpecializzazioni;
     private Map<Long, String> mappaMedici;
-    private Map<Long, String> mappaFasceOrarie; // ID Fascia -> Orario (es: "09:00 - 09:30")
+    private Map<Long, String> mappaFasceOrarie;
 
-    private String nomePazienteLoggato;
-    private String cognomePazienteLoggato;
     private String emailPazienteLoggato;
-    private String recapitoTelefonicoLoggato;
 
-    public PrenotazioneForm() {
-        this("", "", "", "");
-    }
-
-    public PrenotazioneForm(String nome, String cognome, String email, String recapitoTelefonico) {
+    public PrenotazioneForm(String email) {
         $$$setupUI$$$();
         this.controller = new PrenotazioneController();
-        this.nomePazienteLoggato = nome;
-        this.cognomePazienteLoggato = cognome;
         this.emailPazienteLoggato = email;
-        this.recapitoTelefonicoLoggato = recapitoTelefonico;
-        // Autocompiliamo i campi di testo grafici della form
-        textNome.setText(nome);
-        textCognome.setText(cognome);
-        textEmail.setText(email);
-        textRecapito.setText(recapitoTelefonico);
 
-        // Disabilitiamo la modifica manuale per non alterare l'identità del richiedente
+        // Autocompilazione dati paziente tramite controller
+        Map<String, String> anagrafica = controller.ottieniAnagraficaPaziente(email);
+
+        textNome.setText(anagrafica.getOrDefault("nome", ""));
+        textCognome.setText(anagrafica.getOrDefault("cognome", ""));
+        textEmail.setText(email);
+        textRecapito.setText(anagrafica.getOrDefault("recapito", ""));
+
+        // Disabilitiamo la modifica manuale
         textNome.setEditable(false);
         textCognome.setEditable(false);
         textEmail.setEditable(false);
-        Date oggi = new Date();
+        textRecapito.setEditable(false);
 
+        Date oggi = new Date();
         Calendar cal = Calendar.getInstance();
-        Date inizio = cal.getTime(); // Oggi
+        Date inizio = cal.getTime();
         cal.add(Calendar.YEAR, 2);
-        Date fine = cal.getTime();   // Tra due anni
+        Date fine = cal.getTime();
 
         SpinnerDateModel dateModel = new SpinnerDateModel(oggi, inizio, fine, Calendar.DAY_OF_MONTH);
         spinnerData.setModel(dateModel);
-
         JSpinner.DateEditor editor = new JSpinner.DateEditor(spinnerData, "dd/MM/yyyy");
         spinnerData.setEditor(editor);
 
-
         URL imgURL = getClass().getResource("/logo.png");
-
         if (imgURL != null) {
-            // 1. Crea l'ImageIcon originale
             ImageIcon originalIcon = new ImageIcon(imgURL);
-
-            // 2. Definisci le nuove dimensioni desiderate
-            //  int targetWidth = 100;
-            // int targetHeight = 70;
-
-            // 3. Estrai l'oggetto Image e scalalo
-            // Usiamo SCALE_SMOOTH per garantire la massima qualità visiva dei dettagli del logo
-            //  Image scaledImage = originalIcon.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
-            // Scalerà a 650 di larghezza, calcolando l'altezza perfetta per non deformare il logo
             Image scaledImage = originalIcon.getImage().getScaledInstance(220, -1, Image.SCALE_SMOOTH);
-            // 4. Crea una nuova ImageIcon con l'immagine ridimensionata
             ImageIcon resizedIcon = new ImageIcon(scaledImage);
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-            // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
             logoLabel.setText("");
             logoLabel.setIcon(resizedIcon);
-
         } else {
             System.err.println("Errore: Impossibile trovare il file del logo.");
         }
@@ -145,7 +121,6 @@ public class PrenotazioneForm {
                 String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
                 if (medicoSelezionato != null) {
                     Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
-                    System.out.println("ID Medico selezionato: " + idMedico);
                     popolaFasceOrarie(idMedico);
                 } else {
                     cmbFasciaOraria.removeAllItems();
@@ -157,18 +132,12 @@ public class PrenotazioneForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean spuntata = siCheckBox.isSelected();
-
-                // Mostriamo o nascondiamo i campi di conseguenza
                 labelNomeAltro.setVisible(spuntata);
                 textNomeAltro.setVisible(spuntata);
                 cognomeAltroLabel.setVisible(spuntata);
                 textCognomeAltro.setVisible(spuntata);
-
-                // Chiediamo al pannello principale di ricalcolare il layout grafico
                 contentPane.revalidate();
                 contentPane.repaint();
-
-                // MODIFICA: Ridimensiona dinamicamente la finestra fissa (anche se setResizable è false)
                 Window win = SwingUtilities.getWindowAncestor(contentPane);
                 if (win != null) {
                     win.pack();
@@ -201,7 +170,6 @@ public class PrenotazioneForm {
 
                 Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
                 Long idFascia = trovaIdFasciaDaOrario(orarioSelezionato);
-
                 boolean prenotaPerAltro = siCheckBox.isSelected();
                 String nomeAltro = textNomeAltro.getText().trim();
                 String cognomeAltro = textCognomeAltro.getText().trim();
@@ -232,7 +200,7 @@ public class PrenotazioneForm {
                     win.dispose();
                 }
                 SwingUtilities.invokeLater(() -> {
-                    new PazienteForm(nomePazienteLoggato, cognomePazienteLoggato, emailPazienteLoggato, recapitoTelefonicoLoggato).apriForm();
+                    new PazienteForm(emailPazienteLoggato).apriForm();
                 });
             }
         });
@@ -307,10 +275,7 @@ public class PrenotazioneForm {
         JFrame frame = new JFrame("Prenotazione Visita");
         frame.setContentPane(contentPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // MODIFICA: Impedisce all'utente di ridimensionare la finestra trascinando i bordi
         frame.setResizable(false);
-
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);

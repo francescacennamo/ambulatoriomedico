@@ -3,6 +3,7 @@ package entity;
 import database.GestorePersistenza;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GestoreUtente {
@@ -93,5 +94,22 @@ public class GestoreUtente {
         }
 
         return dati;
+    }
+    public Map<Long, String> ottieniMappaSpecializzazioni() {
+        List<Specializzazione> lista = gestorePersistenza.cercaPerCampi(Specializzazione.class, Map.of());
+        Map<Long, String> mappa = new HashMap<>();
+        for (Specializzazione s : lista) {
+            mappa.put(s.getId(), s.getNome());
+        }
+        return mappa;
+    }
+
+    public Map<Long, String> ottieniMediciPerSpecializzazione(Long idSpecializzazione) {
+        List<Medico> listaMedici = gestorePersistenza.cercaPerCampo(Medico.class, "specializzazione.id", idSpecializzazione);
+        Map<Long, String> mappaMedici = new HashMap<>();
+        for (Medico m : listaMedici) {
+            mappaMedici.put(m.getId(), m.getCognome() + " " + m.getNome());
+        }
+        return mappaMedici;
     }
 }

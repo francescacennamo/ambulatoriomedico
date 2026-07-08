@@ -1,7 +1,7 @@
 package entity;
 
-import database.GestorePersistenza; //serve per poter interrogare il database
-
+import database.GestorePersistenza;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,4 +60,75 @@ public class GestoreVisite {
 
         return dettaglio;
     }
+    public Map<Long, String> ottieniFasceDisponibili(Long idMedico, LocalDate dataSelezionata) {
+        Medico medico = gestorePersistenza.trovaPerId(Medico.class, idMedico);
+        if (medico == null) return new HashMap<>();
+
+        generaFasceSeMancanti(idMedico, dataSelezionata);
+
+        Map<String, Object> criteri = new HashMap<>();
+        criteri.put("medico", medico);
+        criteri.put("data", dataSelezionata);
+        criteri.put("stato", StatoFascia.DISPONIBILE);
+
+        List<FasciaOraria> fasceEntita = gestorePersistenza.cercaPerCampi(FasciaOraria.class, criteri);
+        Map<Long, String> mappaRisultato = new HashMap<>();
+        for (FasciaOraria f : fasceEntita) {
+            mappaRisultato.put(f.getId(), f.getOrario());
+        }
+        return mappaRisultato;
+    }
+
+    private void generaFasceSeMancanti(Long idMedico, LocalDate data) {
+        Map<String, Object> filtriFasce = Map.of("medico.id", idMedico, "data", data);
+        if (!gestorePersistenza.cercaPerCampi(FasciaOraria.class, filtriFasce).isEmpty()) return;
+
+        String nomeGiorno = switch (data.getDayOfWeek()) {
+            case MONDAY -> "Lunedì"; case TUESDAY -> "Martedì"; case WEDNESDAY -> "Mercoledì";
+            case THURSDAY -> "Giovedì"; case FRIDAY -> "Venerdì"; case SATURDAY -> "Sabato"; case SUNDAY -> "Domenica";
+        };
+
+        List<Disponibilita> listaDisp = gestorePersistenza.cercaPerCampi(Disponibilita.class, Map.of("medico.id", idMedico, "giorno", nomeGiorno));
+        Medico medico = gestorePersistenza.trovaPerId(Medico.class, idMedico);
+
+        if (medico != null) {
+            for (Disponibilita disp : listaDisp) {
+                String[] parti = disp.getFasciaOraria().split(" - ");
+                if (parti.length == 2) {
+                    java.time.LocalTime inizio = java.time.LocalTime.parse(parti[0]);
+                    java.time.LocalTime fine = java.time.LocalTime.parse(parti[1]);
+                    while (inizio.isBefore(fine)) {
+                        java.time.LocalTime succ = inizio.plusMinutes(30);
+                        gestorePersistenza.salva(new FasciaOraria(inizio + " - " + succ, data, medico));
+                        inizio = succ;
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean prenotaVisita(Long idMedico, Long idFascia, String emailPaziente, boolean perAltro, String nomeAltro, String cognomeAltro) {
+        Medico medico = gestorePersistenza.trovaPerId(Medico.class, idMedico);
+        FasciaOraria fascia = gestorePersistenza.trovaPerId(FasciaOraria.class, idFascia);
+        Paziente paziente = gestorePersistenza.cercaPrimoPerCampi(Paziente.class, Map.of("email", emailPaziente));
+
+        if (medico == null || fascia == null || paziente == null || fascia.getStato() != StatoFascia.DISPONIBILE) {
+            return false;
+        }
+
+        Visita visita = new Visita(paziente, medico, fascia);
+        if (perAltro) {
+            visita.setBeneficiarioNome(nomeAltro);
+            visita.setBeneficiarioCognome(cognomeAltro);
+        }
+
+        fascia.setStato(StatoFascia.PRENOTATA); // Qui nasce l'azione di prenotazione vera e propria
+
+        if (gestorePersistenza.salva(visita)) {
+            gestorePersistenza.aggiorna(fascia);
+            return true;
+        }
+        return false;
+    }
+
 }

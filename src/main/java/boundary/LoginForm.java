@@ -111,19 +111,9 @@ public class LoginForm {
                 break;
 
             case "PAZIENTE":
-                // Chiediamo al controller la mappa di stringhe
-                Map<String, String> anagrafica = controller.ottieniAnagraficaPaziente(email.trim());
-
-                // Estraiamo i valori con dei fallback di sicurezza se la mappa fosse vuota
-                //Se il nome non esiste restituisce utente
-                String nomePaziente = anagrafica.getOrDefault("nome", "Utente");
-                String cognomePaziente = anagrafica.getOrDefault("cognome", "Paziente");
-                String emailPaziente = anagrafica.getOrDefault("email", email.trim());
-                String recapitoPaziente = anagrafica.getOrDefault("recapito", "");
-                // Passiamo i dati nativi (String) al costruttore di PazienteForm
-                PazienteForm pazienteForm = new PazienteForm(nomePaziente, cognomePaziente, emailPaziente, recapitoPaziente);
+                PazienteForm pazienteForm = new PazienteForm(email.trim());
                 pazienteForm.apriForm();
-               break;
+                break;
 
             default:
 
