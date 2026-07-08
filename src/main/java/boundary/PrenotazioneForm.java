@@ -22,6 +22,10 @@ import java.util.Date;
 import javax.swing.ImageIcon;
 import java.net.URL;
 
+import com.toedter.calendar.JDateChooser;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 @SuppressWarnings("unchecked")
 public class PrenotazioneForm {
     private JPanel contentPane;
@@ -34,7 +38,6 @@ public class PrenotazioneForm {
     private JCheckBox siCheckBox;
     private JTextField textEmail;
     private JLabel labelEmail, labelData;
-    private JSpinner spinnerData;
     private JComboBox<String> cmbFasciaOraria;
     private JLabel labelFasciaOraria, labelNomeAltro;
     private JTextField textNomeAltro, textCognomeAltro;
@@ -42,6 +45,8 @@ public class PrenotazioneForm {
     private JButton confermaButton, annullaButton;
     private JTextField textRecapito;
     private JLabel labelTel;
+    private JPanel panelData;
+    private JDateChooser dateChooser; // Questo è il nostro nuovo calendario!
 
     private PrenotazioneController controller;
     private Map<Long, String> mappaSpecializzazioni;
@@ -67,12 +72,20 @@ public class PrenotazioneForm {
         textCognome.setEditable(false);
         textEmail.setEditable(false);
 
-        Date oggi = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, 2);
 
-        spinnerData.setModel(new SpinnerDateModel(oggi, oggi, cal.getTime(), Calendar.DAY_OF_MONTH));
-        spinnerData.setEditor(new JSpinner.DateEditor(spinnerData, "dd/MM/yyyy"));
+        // INIZIALIZZAZIONE CALENDARIO (JDateChooser)
+        dateChooser = new JDateChooser();
+        dateChooser.setDate(new Date()); // Imposta la data di oggi come default
+        dateChooser.setMinSelectableDate(new Date()); // BONUS UX: Impedisce di selezionare giorni passati!
+
+        Calendar cal1 = Calendar.getInstance();
+        cal1.add(Calendar.YEAR, 2);
+        dateChooser.setMaxSelectableDate(cal1.getTime()); // Massimo 2 anni nel futuro
+
+        // Inseriamo il calendario dentro il pannello grafico creato nel Designer
+        panelData.setLayout(new BorderLayout());
+        panelData.add(dateChooser, BorderLayout.CENTER);
+
 
         URL imgURL = getClass().getResource("/logo.png");
         if (imgURL != null) {
@@ -105,9 +118,13 @@ public class PrenotazioneForm {
             contentPane.repaint();
         });
 
-        spinnerData.addChangeListener(e -> {
-            String medico = (String) cmbMediciPerSpec.getSelectedItem();
-            if (medico != null) popolaFasceOrarie(trovaIdMedicoDaNome(medico));
+        // Ascolta quando l'utente clicca su un giorno nel calendario
+        dateChooser.addPropertyChangeListener("date", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                String medico = (String) cmbMediciPerSpec.getSelectedItem();
+                if (medico != null) popolaFasceOrarie(trovaIdMedicoDaNome(medico));
+            }
         });
 
         confermaButton.addActionListener(e -> {
@@ -152,7 +169,9 @@ public class PrenotazioneForm {
         });
     }
 
-    public JPanel getContentPane() { return this.contentPane; }
+    public JPanel getContentPane() {
+        return this.contentPane;
+    }
 
     private void popolaSpecializzazioni() {
         mappaSpecializzazioni = controller.ottieniMappaSpecializzazioni();
@@ -186,9 +205,19 @@ public class PrenotazioneForm {
     private void popolaFasceOrarie(Long idMedico) {
         cmbFasciaOraria.removeAllItems();
         if (idMedico == null) return;
-        LocalDate localDate = ((Date) spinnerData.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        mappaFasceOrarie = controller.ottieniFasceDisponibili(idMedico, localDate);
-        for (String orario : mappaFasceOrarie.values()) cmbFasciaOraria.addItem(orario);
+
+        // Molto più pulito e coerente così:
+        Date dataSelezionata = dateChooser.getDate();
+        if (dataSelezionata == null) return;
+
+        LocalDate localDate = dataSelezionata.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        this.mappaFasceOrarie = controller.ottieniFasceDisponibili(idMedico, localDate);
+        for (String orario : mappaFasceOrarie.values()) {
+            cmbFasciaOraria.addItem(orario);
+        }
     }
 
     private Long trovaIdFasciaDaOrario(String orarioCercato) {
@@ -412,16 +441,6 @@ public class PrenotazioneForm {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 10, 10, 0);
         contentPane.add(labelData, gbc);
-        spinnerData = new JSpinner();
-        spinnerData.setVisible(true);
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 9;
-        gbc.weightx = 1.0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(0, 0, 0, 10);
-        contentPane.add(spinnerData, gbc);
         cmbFasciaOraria = new JComboBox();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
@@ -487,6 +506,10 @@ public class PrenotazioneForm {
         gbc.insets = new Insets(0, 0, 0, 10);
         contentPane.add(textCognomeAltro, gbc);
         confermaButton = new JButton();
+        confermaButton.setBackground(new Color(-10828087));
+        Font confermaButtonFont = this.$$$getFont$$$("Arial", Font.BOLD, 14, confermaButton.getFont());
+        if (confermaButtonFont != null) confermaButton.setFont(confermaButtonFont);
+        confermaButton.setForeground(new Color(-1));
         confermaButton.setText("Conferma");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
@@ -495,6 +518,10 @@ public class PrenotazioneForm {
         gbc.insets = new Insets(30, 40, 10, 0);
         contentPane.add(confermaButton, gbc);
         annullaButton = new JButton();
+        annullaButton.setBackground(new Color(-10828087));
+        Font annullaButtonFont = this.$$$getFont$$$("Arial", Font.BOLD, 14, annullaButton.getFont());
+        if (annullaButtonFont != null) annullaButton.setFont(annullaButtonFont);
+        annullaButton.setForeground(new Color(-1));
         annullaButton.setText("Annulla");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
@@ -533,6 +560,18 @@ public class PrenotazioneForm {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 0, 0, 10);
         contentPane.add(textRecapito, gbc);
+        panelData = new JPanel();
+        panelData.setLayout(new GridBagLayout());
+        panelData.setBackground(new Color(-14793370));
+        Font panelDataFont = this.$$$getFont$$$("Arial", Font.PLAIN, 12, panelData.getFont());
+        if (panelDataFont != null) panelData.setFont(panelDataFont);
+        panelData.setForeground(new Color(-1));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 9;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(0, 0, 0, 10);
+        contentPane.add(panelData, gbc);
     }
 
     /**
