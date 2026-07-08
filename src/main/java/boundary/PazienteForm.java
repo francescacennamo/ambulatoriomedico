@@ -197,14 +197,14 @@ public class PazienteForm {
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridheight = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(30, 0, 30, 0);
+        gbc.insets = new Insets(30, 150, 30, 0);
         panel1.add(disegnoLabel, gbc);
         testoLabel = new JLabel();
         Font testoLabelFont = this.$$$getFont$$$("Arial Rounded MT Bold", Font.PLAIN, 14, testoLabel.getFont());
         if (testoLabelFont != null) testoLabel.setFont(testoLabelFont);
         testoLabel.setForeground(new Color(-1));
         testoLabel.setText("La tua salute in mani sicure");
+        testoLabel.setVisible(false);
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;

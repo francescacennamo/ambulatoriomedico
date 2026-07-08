@@ -97,8 +97,8 @@
           </component>
           <component id="9e2d7" class="javax.swing.JLabel" binding="disegnoLabel">
             <constraints>
-              <grid row="2" column="0" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-              <gridbag top="30" left="0" bottom="30" right="0" weightx="0.0" weighty="0.0"/>
+              <grid row="2" column="0" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag top="30" left="150" bottom="30" right="0" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
               <text value=""/>
@@ -113,6 +113,7 @@
               <font name="Arial Rounded MT Bold" size="14" style="0"/>
               <foreground color="-1"/>
               <text value="La tua salute in mani sicure"/>
+              <visible value="false"/>
             </properties>
           </component>
           <component id="eb206" class="javax.swing.JTextPane" default-binding="true">
