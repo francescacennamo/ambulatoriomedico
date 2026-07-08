@@ -8,7 +8,9 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.net.URL;
 import java.util.Locale;
+import javax.swing.ImageIcon;
 
 public class MedicoForm {
     private JButton logoutButton;
@@ -37,6 +39,43 @@ public class MedicoForm {
         this.cognome = cognome;
         this.email = email;
         this.recapito = recapito;
+
+        URL imgURL = getClass().getResource("/logo.png");
+        URL imgURL1 = getClass().getResource("/disegno2.png");
+        if (imgURL != null) {
+
+            ImageIcon originalIcon = new ImageIcon(imgURL);
+
+
+            Image scaledImage = originalIcon.getImage().getScaledInstance(200, -1, Image.SCALE_SMOOTH);
+
+            ImageIcon resizedIcon = new ImageIcon(scaledImage);
+            logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
+            logoLabel.setText("");
+            logoLabel.setIcon(resizedIcon);
+
+        } else {
+            System.err.println("Errore: Impossibile trovare il file del logo.");
+        }
+        if (imgURL1 != null) {
+
+            ImageIcon originalIcon = new ImageIcon(imgURL1);
+
+
+            Image scaledImage = originalIcon.getImage().getScaledInstance(480, -1, Image.SCALE_SMOOTH);
+
+            ImageIcon resizedIcon = new ImageIcon(scaledImage);
+            disegnoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
+            disegnoLabel.setText("");
+            disegnoLabel.setIcon(resizedIcon);
+
+        } else {
+            System.err.println("Errore: Impossibile trovare il file del logo.");
+        }
 
         logoutButton.addActionListener(e -> {
 

@@ -8,15 +8,20 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 import java.util.List;
+
+import javax.swing.ImageIcon;
+import java.net.URL;
 
 public class VisitaMedicoForm {
     private JPanel contentPane;
     private JPanel JPanel1;
     private JScrollPane scorrimento;
     private JPanel PanelCentrale;
+    private JLabel logoLabel;
     private Long idMedico;
     private JFrame previousFrame;
     private JFrame currentFrame;
@@ -27,6 +32,28 @@ public class VisitaMedicoForm {
         this.previousFrame = previousFrame;
 
         scorrimento.getVerticalScrollBar().setUnitIncrement(20);
+
+
+        URL imgURL = getClass().getResource("/logo.png");
+
+        if (imgURL != null) {
+
+            ImageIcon originalIcon = new ImageIcon(imgURL);
+
+
+            Image scaledImage = originalIcon.getImage().getScaledInstance(200, -1, Image.SCALE_SMOOTH);
+
+            ImageIcon resizedIcon = new ImageIcon(scaledImage);
+            logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
+            logoLabel.setText("");
+            logoLabel.setIcon(resizedIcon);
+
+        } else {
+            System.err.println("Errore: Impossibile trovare il file del logo.");
+        }
+
     }
 
     public JFrame apriForm() {
@@ -135,11 +162,11 @@ public class VisitaMedicoForm {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         JPanel1 = new JPanel();
         JPanel1.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         JPanel1.setBackground(new Color(-15906911));
-        contentPane.add(JPanel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        contentPane.add(JPanel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         Font label1Font = this.$$$getFont$$$("Arial", Font.BOLD, 28, label1.getFont());
         if (label1Font != null) label1.setFont(label1Font);
@@ -169,6 +196,9 @@ public class VisitaMedicoForm {
         label4.setForeground(new Color(-16764058));
         label4.setText("Filtra per");
         JPanel1.add(label4, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        logoLabel = new JLabel();
+        logoLabel.setText("Label");
+        contentPane.add(logoLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
