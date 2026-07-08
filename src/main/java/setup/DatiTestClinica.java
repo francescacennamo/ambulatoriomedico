@@ -39,6 +39,7 @@ public class DatiTestClinica {
         // 3. Recupero delle istanze salvate per impostare le relazioni successive
         Medico marco = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "marco.neri@clinica.it"));
         Medico sara = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "sara.greco@clinica.it"));
+        Medico dario = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "dario.bianchi@clinica.it"));
         Paziente mario = gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "mario.rossi@email.it"));
         Paziente anna = gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "anna.bianchi@email.it"));
 
@@ -57,8 +58,13 @@ public class DatiTestClinica {
             d3.setMedico(sara);
             Disponibilita d4 = new Disponibilita("Giovedì", "09:00 - 12:00"); // Oggi è Giovedì!
             d4.setMedico(sara);
+            Disponibilita d5 = new Disponibilita("Mercoledì", "10:00 - 13:00");
+            d5.setMedico(dario);
+            Disponibilita d6 = new Disponibilita("Venerdì", "14:00 - 18:00");
+            d6.setMedico(dario);
 
-            gestore.salvaTutti(d1, d2, d3, d4);
+            // AGGIUNTA: Salviamo anche d5 e d6
+            gestore.salvaTutti(d1, d2, d3, d4, d5, d6);
         }
 
         // 4. Inserimento Fasce Orarie fisse di test (solo se la tabella è attualmente vuota)

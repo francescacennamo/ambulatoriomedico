@@ -2,10 +2,7 @@ package entity;
 
 import database.GestorePersistenza;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GestoreVisite {
     private static GestoreVisite instance;
@@ -55,7 +52,7 @@ public class GestoreVisite {
         criteri.put("stato", StatoFascia.DISPONIBILE);
 
         List<FasciaOraria> fasceEntita = gestorePersistenza.cercaPerCampi(FasciaOraria.class, criteri);
-        Map<Long, String> mappaRisultato = new HashMap<>();
+        Map<Long, String> mappaRisultato = new LinkedHashMap<>();
         for (FasciaOraria f : fasceEntita) mappaRisultato.put(f.getId(), f.getOrario());
         return mappaRisultato;
     }

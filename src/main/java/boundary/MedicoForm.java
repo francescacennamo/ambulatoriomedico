@@ -41,7 +41,7 @@ public class MedicoForm {
         this.recapito = recapito;
 
         URL imgURL = getClass().getResource("/logo.png");
-        URL imgURL1 = getClass().getResource("/disegno2.png");
+        URL imgURL1 = getClass().getResource("/disegnosenzasfondo.png");
         if (imgURL != null) {
 
             ImageIcon originalIcon = new ImageIcon(imgURL);
