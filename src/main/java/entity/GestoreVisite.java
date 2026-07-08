@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 public class GestoreVisite {
-    private static GestoreVisite instance; //singleton
+    private static GestoreVisite instance;
     private GestorePersistenza gestorePersistenza;
 
-    private GestoreVisite() { //private per evitare di poter fare new
+    private GestoreVisite() {
         gestorePersistenza = new GestorePersistenza();
     }
 
@@ -24,48 +24,31 @@ public class GestoreVisite {
 
     public List<Long> getIdVisitePerMedico(Long idMedico) {
         List<Long> ids = new ArrayList<>();
-        //Dice al gestore persistenza di cercare tutte le entity visita
-        // in cui il campo idmedico è uguale all'id ricevto
         List<Visita> visite = gestorePersistenza.cercaPerCampi(Visita.class, Map.of("medico.id", idMedico));
-
-        for (Visita visita : visite) {
-            ids.add(visita.getId());
-        }
-
+        for (Visita visita : visite) ids.add(visita.getId());
         return ids;
     }
 
-    //Restituisce il dettaglio di una visita.
     public Map<String, Object> getDettaglioVisita(Long idVisita) {
-
         Visita visita = gestorePersistenza.trovaPerId(Visita.class, idVisita);
-
         Map<String, Object> dettaglio = new HashMap<>();
-
-        if (visita == null) {
-            return dettaglio; //quidi restituisce una mappa vuota
-        }
+        if (visita == null) return dettaglio;
 
         dettaglio.put("paziente", visita.getPaziente().getNome() + " " + visita.getPaziente().getCognome());
-
         dettaglio.put("data", visita.getFasciaOraria().getData());
-
         dettaglio.put("orario", visita.getFasciaOraria().getOrario());
-
         dettaglio.put("stato", visita.getStato());
-
         dettaglio.put("beneficiarioNome", visita.getBeneficiarioNome());
-
         dettaglio.put("beneficiarioCognome", visita.getBeneficiarioCognome());
-
+        dettaglio.put("recapitoFornito", visita.getRecapitoFornito()); // Aggiunto ai dettagli
         return dettaglio;
     }
+
     public Map<Long, String> ottieniFasceDisponibili(Long idMedico, LocalDate dataSelezionata) {
         Medico medico = gestorePersistenza.trovaPerId(Medico.class, idMedico);
         if (medico == null) return new HashMap<>();
 
         generaFasceSeMancanti(idMedico, dataSelezionata);
-
         Map<String, Object> criteri = new HashMap<>();
         criteri.put("medico", medico);
         criteri.put("data", dataSelezionata);
@@ -73,9 +56,7 @@ public class GestoreVisite {
 
         List<FasciaOraria> fasceEntita = gestorePersistenza.cercaPerCampi(FasciaOraria.class, criteri);
         Map<Long, String> mappaRisultato = new HashMap<>();
-        for (FasciaOraria f : fasceEntita) {
-            mappaRisultato.put(f.getId(), f.getOrario());
-        }
+        for (FasciaOraria f : fasceEntita) mappaRisultato.put(f.getId(), f.getOrario());
         return mappaRisultato;
     }
 
@@ -107,22 +88,25 @@ public class GestoreVisite {
         }
     }
 
-    public boolean prenotaVisita(Long idMedico, Long idFascia, String emailPaziente, boolean perAltro, String nomeAltro, String cognomeAltro) {
+    // MODIFICA: Aggiunto il parametro 'telefonoVisita'
+    public boolean prenotaVisita(Long idMedico, Long idFascia, Long idPaziente, String telefonoVisita, boolean perAltro, String nomeAltro, String cognomeAltro) {
         Medico medico = gestorePersistenza.trovaPerId(Medico.class, idMedico);
         FasciaOraria fascia = gestorePersistenza.trovaPerId(FasciaOraria.class, idFascia);
-        Paziente paziente = gestorePersistenza.cercaPrimoPerCampi(Paziente.class, Map.of("email", emailPaziente));
+        Paziente paziente = gestorePersistenza.trovaPerId(Paziente.class, idPaziente);
 
         if (medico == null || fascia == null || paziente == null || fascia.getStato() != StatoFascia.DISPONIBILE) {
             return false;
         }
 
         Visita visita = new Visita(paziente, medico, fascia);
+        visita.setRecapitoFornito(telefonoVisita); // Salviamo il telefono nella Visita
+
         if (perAltro) {
             visita.setBeneficiarioNome(nomeAltro);
             visita.setBeneficiarioCognome(cognomeAltro);
         }
 
-        fascia.setStato(StatoFascia.PRENOTATA); // Qui nasce l'azione di prenotazione vera e propria
+        fascia.setStato(StatoFascia.PRENOTATA);
 
         if (gestorePersistenza.salva(visita)) {
             gestorePersistenza.aggiorna(fascia);
@@ -130,5 +114,4 @@ public class GestoreVisite {
         }
         return false;
     }
-
 }

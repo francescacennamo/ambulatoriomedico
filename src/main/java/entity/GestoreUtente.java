@@ -62,6 +62,7 @@ public class GestoreUtente {
                 Paziente.class, Map.of("email", email.trim()));
 
         if (p != null) {
+            datiAnagrafici.put("id", p.getId().toString());
             datiAnagrafici.put("nome", p.getNome());
             datiAnagrafici.put("cognome", p.getCognome());
             datiAnagrafici.put("email", p.getEmail());
@@ -111,5 +112,20 @@ public class GestoreUtente {
             mappaMedici.put(m.getId(), m.getCognome() + " " + m.getNome());
         }
         return mappaMedici;
+    }
+    public Map<String, String> ottieniAnagraficaPazientePerId(Long id) {
+        Map<String, String> datiAnagrafici = new HashMap<>();
+        if (id == null) return datiAnagrafici;
+
+        Paziente p = gestorePersistenza.trovaPerId(Paziente.class, id);
+
+        if (p != null) {
+            datiAnagrafici.put("id", p.getId().toString());
+            datiAnagrafici.put("nome", p.getNome());
+            datiAnagrafici.put("cognome", p.getCognome());
+            datiAnagrafici.put("email", p.getEmail());
+            datiAnagrafici.put("recapito", p.getRecapitoTelefonico());
+        }
+        return datiAnagrafici;
     }
 }

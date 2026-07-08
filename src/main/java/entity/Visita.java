@@ -21,11 +21,11 @@ public class Visita {
 
     @ManyToOne
     @JoinColumn(name = "paziente_id")
-    private Paziente paziente; // Chi prenota (Utente loggato)
+    private Paziente paziente;
 
-    // NUOVI CAMPI TESTUALI PER LA PRENOTAZIONE A TERZI
     private String beneficiarioNome;
     private String beneficiarioCognome;
+    private String recapitoFornito;
 
     public Visita() {
         this.stato = StatoVisita.PRENOTATA;
@@ -38,7 +38,6 @@ public class Visita {
         this.stato = StatoVisita.PRENOTATA;
     }
 
-    // GETTER E SETTER
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public FasciaOraria getFasciaOraria() { return fasciaOraria; }
@@ -54,4 +53,8 @@ public class Visita {
     public void setBeneficiarioNome(String beneficiarioNome) { this.beneficiarioNome = beneficiarioNome; }
     public String getBeneficiarioCognome() { return beneficiarioCognome; }
     public void setBeneficiarioCognome(String beneficiarioCognome) { this.beneficiarioCognome = beneficiarioCognome; }
+
+    // Getter e Setter per il nuovo campo
+    public String getRecapitoFornito() { return recapitoFornito; }
+    public void setRecapitoFornito(String recapitoFornito) { this.recapitoFornito = recapitoFornito; }
 }

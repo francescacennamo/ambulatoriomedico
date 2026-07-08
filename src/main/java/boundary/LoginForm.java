@@ -30,27 +30,19 @@ public class LoginForm {
     private JLabel titoloLabel;
     private JLabel emailLabel;
 
-
     public LoginForm() {
         URL imgURL = getClass().getResource("/logo.png");
-
         if (imgURL != null) {
-
             ImageIcon originalIcon = new ImageIcon(imgURL);
-
-
             Image scaledImage = originalIcon.getImage().getScaledInstance(250, -1, Image.SCALE_SMOOTH);
-
             ImageIcon resizedIcon = new ImageIcon(scaledImage);
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-            // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
             logoLabel.setText("");
             logoLabel.setIcon(resizedIcon);
-
         } else {
             System.err.println("Errore: Impossibile trovare il file del logo.");
         }
+
         accediButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,45 +52,25 @@ public class LoginForm {
     }
 
     private void login() {
-
         String email = textEmail.getText();
         String password = new String(passwordField.getPassword());
 
         if (email.isEmpty() || password.isEmpty()) {
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Compilare tutti i campi",
-                    "Errore",
-                    JOptionPane.ERROR_MESSAGE);
-
+            JOptionPane.showMessageDialog(null, "Compilare tutti i campi", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         LoginController controller = new LoginController();
-
         String tipoUtente = controller.login(email.trim(), password);
 
         if (tipoUtente == null) {
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Email o password non valide",
-                    "Errore",
-                    JOptionPane.ERROR_MESSAGE
-            );
-
+            JOptionPane.showMessageDialog(null, "Email o password non valide", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-
         switch (tipoUtente) {
-
             case "MEDICO":
-
                 Map<String,String> dati = controller.ottieniAnagraficaMedico(email.trim());
-                // Estraiamo i valori con dei fallback di sicurezza se la mappa fosse vuota
-                //Se il nome non esiste restituisce utente
                 String idMedico = dati.getOrDefault ("id", "0");
                 Long id = Long.parseLong(idMedico);
                 String nomeMedico = dati.getOrDefault("nome", "Utente");
@@ -106,30 +78,24 @@ public class LoginForm {
                 String emailMedico = dati.getOrDefault("email", email.trim());
                 String recapitoMedico = dati.getOrDefault("recapito", "");
                 MedicoForm medicoForm =  new MedicoForm(id, nomeMedico,cognomeMedico,emailMedico,recapitoMedico);
-
                 medicoForm.apriForm();
                 break;
 
             case "PAZIENTE":
-                PazienteForm pazienteForm = new PazienteForm(email.trim());
+                Map<String, String> anagraficaPaziente = controller.ottieniAnagraficaPaziente(email.trim());
+                String idPazienteStr = anagraficaPaziente.getOrDefault("id", "0");
+                Long idPaziente = Long.parseLong(idPazienteStr);
+
+                PazienteForm pazienteForm = new PazienteForm(idPaziente);
                 pazienteForm.apriForm();
                 break;
 
             default:
-
-                JOptionPane.showMessageDialog(
-                        null,
-                        "Ruolo utente non riconosciuto",
-                        "Errore",
-                        JOptionPane.ERROR_MESSAGE
-                );
+                JOptionPane.showMessageDialog(null, "Ruolo utente non riconosciuto", "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
         }
 
-
-        // Chiude la finestra di login
         SwingUtilities.getWindowAncestor(contentPane).dispose();
-
     }
 
     public JFrame apriLoginForm() {

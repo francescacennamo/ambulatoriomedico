@@ -21,13 +21,15 @@ public class PazienteForm {
     private JLabel testoLabel;
     private JPanel labelTitolo;
 
-    private String emailLoggato;
+    // Unico parametro necessario per viaggiare nel sistema
+    private Long idLoggato;
 
-    public PazienteForm(String email) {
-        this.emailLoggato = email;
+    public PazienteForm(Long id) {
+        this.idLoggato = id;
 
         URL imgURL = getClass().getResource("/logo.png");
         URL imgURL1 = getClass().getResource("/disegno2.png");
+
         if (imgURL != null) {
             ImageIcon originalIcon = new ImageIcon(imgURL);
             Image scaledImage = originalIcon.getImage().getScaledInstance(200, -1, Image.SCALE_SMOOTH);
@@ -35,8 +37,6 @@ public class PazienteForm {
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
             logoLabel.setText("");
             logoLabel.setIcon(resizedIcon);
-        } else {
-            System.err.println("Errore: Impossibile trovare il file del logo.");
         }
 
         if (imgURL1 != null) {
@@ -46,38 +46,30 @@ public class PazienteForm {
             disegnoLabel.setHorizontalAlignment(SwingConstants.CENTER);
             disegnoLabel.setText("");
             disegnoLabel.setIcon(resizedIcon);
-        } else {
-            System.err.println("Errore: Impossibile trovare il file del disegno.");
         }
 
         prenotaVisitaButton.addActionListener(e -> {
             Window win = SwingUtilities.getWindowAncestor(contentPane);
-            if (win != null) {
-                win.dispose();
-            }
+            if (win != null) win.dispose();
             SwingUtilities.invokeLater(() -> {
-                new PrenotazioneForm(emailLoggato).apriPrenotazioneForm();
+                // Passiamo solo l'ID alla schermata di prenotazione
+                new PrenotazioneForm(idLoggato).apriPrenotazioneForm();
             });
         });
 
         logoutButton.addActionListener(e -> {
             Window win = SwingUtilities.getWindowAncestor(contentPane);
-            if (win != null) {
-                win.dispose();
-            }
-            SwingUtilities.invokeLater(() -> {
-                new LoginForm().apriLoginForm();
-            });
+            if (win != null) win.dispose();
+            SwingUtilities.invokeLater(() -> new LoginForm().apriLoginForm());
         });
 
         leMieVisiteButton.addActionListener(e -> {
-            // qui in futuro: apri la lista visite del paziente
+            // LA TUA COLLEGA USA L'ID QUI
+            // es: new VisitePazienteForm(idLoggato).apriForm();
         });
     }
 
-    public JPanel getContentPane() {
-        return contentPane;
-    }
+    public JPanel getContentPane() { return contentPane; }
 
     public JFrame apriForm() {
         JFrame frame = new JFrame("Area Paziente");

@@ -22,32 +22,24 @@ import java.util.Date;
 import javax.swing.ImageIcon;
 import java.net.URL;
 
+@SuppressWarnings("unchecked")
 public class PrenotazioneForm {
     private JPanel contentPane;
     private JTextField textCognome;
-    private JComboBox cmbSpecializzazioni;
-    private JComboBox cmbMediciPerSpec;
-    private JLabel labelNome;
-    private JLabel labelCognome;
-    private JLabel labelSpecializzazione;
-    private JLabel labelTitolo;
-    private JLabel labelMedico;
+    private JComboBox<String> cmbSpecializzazioni;
+    private JComboBox<String> cmbMediciPerSpec;
+    private JLabel labelNome, labelCognome, labelSpecializzazione, labelTitolo, labelMedico;
     private JTextField textNome;
     private JLabel labelPrenAltro;
     private JCheckBox siCheckBox;
     private JTextField textEmail;
-    private JLabel labelEmail;
-    private JLabel labelData;
+    private JLabel labelEmail, labelData;
     private JSpinner spinnerData;
-    private JComboBox cmbFasciaOraria;
-    private JLabel labelFasciaOraria;
-    private JLabel labelNomeAltro;
-    private JTextField textNomeAltro;
-    private JTextField textCognomeAltro;
-    private JLabel cognomeAltroLabel;
-    private JLabel logoLabel;
-    private JButton confermaButton;
-    private JButton annullaButton;
+    private JComboBox<String> cmbFasciaOraria;
+    private JLabel labelFasciaOraria, labelNomeAltro;
+    private JTextField textNomeAltro, textCognomeAltro;
+    private JLabel cognomeAltroLabel, logoLabel;
+    private JButton confermaButton, annullaButton;
     private JTextField textRecapito;
     private JLabel labelTel;
 
@@ -56,192 +48,137 @@ public class PrenotazioneForm {
     private Map<Long, String> mappaMedici;
     private Map<Long, String> mappaFasceOrarie;
 
-    private String emailPazienteLoggato;
+    private Long idPazienteLoggato;
 
-    public PrenotazioneForm(String email) {
+    public PrenotazioneForm(Long id) {
         $$$setupUI$$$();
         this.controller = new PrenotazioneController();
-        this.emailPazienteLoggato = email;
+        this.idPazienteLoggato = id;
 
-        // Autocompilazione dati paziente tramite controller
-        Map<String, String> anagrafica = controller.ottieniAnagraficaPaziente(email);
+        Map<String, String> anagrafica = controller.ottieniAnagraficaPazientePerId(id);
 
         textNome.setText(anagrafica.getOrDefault("nome", ""));
         textCognome.setText(anagrafica.getOrDefault("cognome", ""));
-        textEmail.setText(email);
+        textEmail.setText(anagrafica.getOrDefault("email", ""));
         textRecapito.setText(anagrafica.getOrDefault("recapito", ""));
 
-        // Disabilitiamo la modifica manuale
+        // MODIFICA: 'textRecapito' NON è più bloccato. Lasciamo l'utente libero di scriverci!
         textNome.setEditable(false);
         textCognome.setEditable(false);
         textEmail.setEditable(false);
-        textRecapito.setEditable(false);
 
         Date oggi = new Date();
         Calendar cal = Calendar.getInstance();
-        Date inizio = cal.getTime();
         cal.add(Calendar.YEAR, 2);
-        Date fine = cal.getTime();
 
-        SpinnerDateModel dateModel = new SpinnerDateModel(oggi, inizio, fine, Calendar.DAY_OF_MONTH);
-        spinnerData.setModel(dateModel);
-        JSpinner.DateEditor editor = new JSpinner.DateEditor(spinnerData, "dd/MM/yyyy");
-        spinnerData.setEditor(editor);
+        spinnerData.setModel(new SpinnerDateModel(oggi, oggi, cal.getTime(), Calendar.DAY_OF_MONTH));
+        spinnerData.setEditor(new JSpinner.DateEditor(spinnerData, "dd/MM/yyyy"));
 
         URL imgURL = getClass().getResource("/logo.png");
         if (imgURL != null) {
-            ImageIcon originalIcon = new ImageIcon(imgURL);
-            Image scaledImage = originalIcon.getImage().getScaledInstance(220, -1, Image.SCALE_SMOOTH);
-            ImageIcon resizedIcon = new ImageIcon(scaledImage);
+            Image scaledImage = new ImageIcon(imgURL).getImage().getScaledInstance(220, -1, Image.SCALE_SMOOTH);
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
             logoLabel.setText("");
-            logoLabel.setIcon(resizedIcon);
-        } else {
-            System.err.println("Errore: Impossibile trovare il file del logo.");
+            logoLabel.setIcon(new ImageIcon(scaledImage));
         }
 
         popolaSpecializzazioni();
 
-        cmbSpecializzazioni.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String nomeSelezionato = (String) cmbSpecializzazioni.getSelectedItem();
-                if (nomeSelezionato != null) {
-                    Long idSelezionato = trovaIdSpecDaNome(nomeSelezionato);
-                    if (idSelezionato != null) {
-                        popolaMedici(idSelezionato);
-                    }
-                }
+        cmbSpecializzazioni.addActionListener(e -> {
+            String nome = (String) cmbSpecializzazioni.getSelectedItem();
+            if (nome != null) popolaMedici(trovaIdSpecDaNome(nome));
+        });
+
+        cmbMediciPerSpec.addActionListener(e -> {
+            String medico = (String) cmbMediciPerSpec.getSelectedItem();
+            if (medico != null) popolaFasceOrarie(trovaIdMedicoDaNome(medico));
+            else cmbFasciaOraria.removeAllItems();
+        });
+
+        siCheckBox.addActionListener(e -> {
+            boolean spuntata = siCheckBox.isSelected();
+            labelNomeAltro.setVisible(spuntata);
+            textNomeAltro.setVisible(spuntata);
+            cognomeAltroLabel.setVisible(spuntata);
+            textCognomeAltro.setVisible(spuntata);
+            contentPane.revalidate();
+            contentPane.repaint();
+        });
+
+        spinnerData.addChangeListener(e -> {
+            String medico = (String) cmbMediciPerSpec.getSelectedItem();
+            if (medico != null) popolaFasceOrarie(trovaIdMedicoDaNome(medico));
+        });
+
+        confermaButton.addActionListener(e -> {
+            String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
+            String orarioSelezionato = (String) cmbFasciaOraria.getSelectedItem();
+
+            // Estraiamo il testo attualmente presente nella casella Recapito
+            String telefonoVisita = textRecapito.getText().trim();
+
+            // Rendi il telefono obbligatorio, visto che serve per la clinica!
+            if (medicoSelezionato == null || orarioSelezionato == null || telefonoVisita.isEmpty()) {
+                JOptionPane.showMessageDialog(contentPane, "Compilare i campi obbligatori (Medico, Fascia, Recapito Telefonico).", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
+            Long idFascia = trovaIdFasciaDaOrario(orarioSelezionato);
+            boolean prenotaPerAltro = siCheckBox.isSelected();
+            String nomeAltro = textNomeAltro.getText().trim();
+            String cognomeAltro = textCognomeAltro.getText().trim();
+
+            if (prenotaPerAltro && (nomeAltro.isEmpty() || cognomeAltro.isEmpty())) {
+                JOptionPane.showMessageDialog(contentPane, "Inserisci Nome e Cognome della persona per cui stai prenotando.", "Dati Mancanti", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // MODIFICA: Passiamo il 'telefonoVisita' al controller
+            boolean successo = controller.confermaPrenotazione(idMedico, idFascia, idPazienteLoggato, telefonoVisita, prenotaPerAltro, nomeAltro, cognomeAltro);
+
+            if (successo) {
+                JOptionPane.showMessageDialog(contentPane, "Visita prenotata con successo!", "Conferma", JOptionPane.INFORMATION_MESSAGE);
+                popolaFasceOrarie(idMedico);
+            } else {
+                JOptionPane.showMessageDialog(contentPane, "Impossibile completare la prenotazione. Controllare i dati.", "Errore", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        cmbMediciPerSpec.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
-                if (medicoSelezionato != null) {
-                    Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
-                    popolaFasceOrarie(idMedico);
-                } else {
-                    cmbFasciaOraria.removeAllItems();
-                }
-            }
-        });
-
-        siCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean spuntata = siCheckBox.isSelected();
-                labelNomeAltro.setVisible(spuntata);
-                textNomeAltro.setVisible(spuntata);
-                cognomeAltroLabel.setVisible(spuntata);
-                textCognomeAltro.setVisible(spuntata);
-                contentPane.revalidate();
-                contentPane.repaint();
-                Window win = SwingUtilities.getWindowAncestor(contentPane);
-                if (win != null) {
-                    win.pack();
-                }
-            }
-        });
-
-        spinnerData.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
-                if (medicoSelezionato != null) {
-                    Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
-                    popolaFasceOrarie(idMedico);
-                }
-            }
-        });
-
-        confermaButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
-                String orarioSelezionato = (String) cmbFasciaOraria.getSelectedItem();
-                String emailLoggato = textEmail.getText().trim();
-
-                if (medicoSelezionato == null || orarioSelezionato == null || emailLoggato.isEmpty()) {
-                    JOptionPane.showMessageDialog(contentPane, "Compilare i campi obbligatori (Medico, Fascia, tua Email).", "Errore", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
-                Long idFascia = trovaIdFasciaDaOrario(orarioSelezionato);
-                boolean prenotaPerAltro = siCheckBox.isSelected();
-                String nomeAltro = textNomeAltro.getText().trim();
-                String cognomeAltro = textCognomeAltro.getText().trim();
-
-                if (prenotaPerAltro && (nomeAltro.isEmpty() || cognomeAltro.isEmpty())) {
-                    JOptionPane.showMessageDialog(contentPane, "Inserisci Nome e Cognome della persona per cui stai prenotando.", "Dati Mancanti", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                boolean successo = controller.confermaPrenotazione(idMedico, idFascia, emailLoggato, prenotaPerAltro, nomeAltro, cognomeAltro);
-
-                if (successo) {
-                    JOptionPane.showMessageDialog(contentPane, "Visita prenotata con successo!", "Conferma", JOptionPane.INFORMATION_MESSAGE);
-                    if (idMedico != null) {
-                        popolaFasceOrarie(idMedico);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(contentPane, "Impossibile completare la prenotazione. Controllare i dati.", "Errore", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-
-        annullaButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Window win = SwingUtilities.getWindowAncestor(contentPane);
-                if (win != null) {
-                    win.dispose();
-                }
-                SwingUtilities.invokeLater(() -> {
-                    new PazienteForm(emailPazienteLoggato).apriForm();
-                });
-            }
+        annullaButton.addActionListener(e -> {
+            Window win = SwingUtilities.getWindowAncestor(contentPane);
+            if (win != null) win.dispose();
+            SwingUtilities.invokeLater(() -> new PazienteForm(idPazienteLoggato).apriForm());
         });
     }
 
-    public JPanel getContentPane() {
-        return this.contentPane;
-    }
+    public JPanel getContentPane() { return this.contentPane; }
 
     private void popolaSpecializzazioni() {
-        this.mappaSpecializzazioni = controller.ottieniMappaSpecializzazioni();
+        mappaSpecializzazioni = controller.ottieniMappaSpecializzazioni();
         cmbSpecializzazioni.removeAllItems();
-        for (String nome : mappaSpecializzazioni.values()) {
-            cmbSpecializzazioni.addItem(nome);
-        }
+        for (String nome : mappaSpecializzazioni.values()) cmbSpecializzazioni.addItem(nome);
         cmbSpecializzazioni.setSelectedIndex(-1);
     }
 
     private Long trovaIdSpecDaNome(String nomeCercato) {
+        if (mappaSpecializzazioni == null) return null;
         for (Map.Entry<Long, String> entry : mappaSpecializzazioni.entrySet()) {
-            if (entry.getValue().equals(nomeCercato)) {
-                return entry.getKey();
-            }
+            if (entry.getValue().equals(nomeCercato)) return entry.getKey();
         }
         return null;
     }
 
-    private void popolaMedici(Long idSpecializzazione) {
+    private void popolaMedici(Long idSpec) {
         cmbMediciPerSpec.removeAllItems();
-        this.mappaMedici = controller.ottieniMediciPerSpecializzazione(idSpecializzazione);
-        cmbMediciPerSpec.removeAllItems();
-        for (String nomeMedico : mappaMedici.values()) {
-            cmbMediciPerSpec.addItem(nomeMedico);
-        }
+        mappaMedici = controller.ottieniMediciPerSpecializzazione(idSpec);
+        for (String nome : mappaMedici.values()) cmbMediciPerSpec.addItem(nome);
     }
 
     private Long trovaIdMedicoDaNome(String nomeCercato) {
+        if (mappaMedici == null) return null;
         for (Map.Entry<Long, String> entry : mappaMedici.entrySet()) {
-            if (entry.getValue().equals(nomeCercato)) {
-                return entry.getKey();
-            }
+            if (entry.getValue().equals(nomeCercato)) return entry.getKey();
         }
         return null;
     }
@@ -249,24 +186,15 @@ public class PrenotazioneForm {
     private void popolaFasceOrarie(Long idMedico) {
         cmbFasciaOraria.removeAllItems();
         if (idMedico == null) return;
-
-        Date dateDaSpinner = (Date) spinnerData.getValue();
-        LocalDate localDate = dateDaSpinner.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-
-        this.mappaFasceOrarie = controller.ottieniFasceDisponibili(idMedico, localDate);
-        for (String orario : mappaFasceOrarie.values()) {
-            cmbFasciaOraria.addItem(orario);
-        }
+        LocalDate localDate = ((Date) spinnerData.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        mappaFasceOrarie = controller.ottieniFasceDisponibili(idMedico, localDate);
+        for (String orario : mappaFasceOrarie.values()) cmbFasciaOraria.addItem(orario);
     }
 
     private Long trovaIdFasciaDaOrario(String orarioCercato) {
         if (mappaFasceOrarie == null) return null;
         for (Map.Entry<Long, String> entry : mappaFasceOrarie.entrySet()) {
-            if (entry.getValue().equals(orarioCercato)) {
-                return entry.getKey();
-            }
+            if (entry.getValue().equals(orarioCercato)) return entry.getKey();
         }
         return null;
     }

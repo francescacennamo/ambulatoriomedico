@@ -7,11 +7,10 @@ import java.util.Map;
 
 public class PrenotazioneController {
 
-    public PrenotazioneController() {
-    }
+    public PrenotazioneController() {}
 
-    public Map<String, String> ottieniAnagraficaPaziente(String email) {
-        return GestoreUtente.getInstance().ottieniAnagraficaPaziente(email);
+    public Map<String, String> ottieniAnagraficaPazientePerId(Long id) {
+        return GestoreUtente.getInstance().ottieniAnagraficaPazientePerId(id);
     }
 
     public Map<Long, String> ottieniMappaSpecializzazioni() {
@@ -26,7 +25,7 @@ public class PrenotazioneController {
         return GestoreVisite.getInstance().ottieniFasceDisponibili(idMedico, dataSelezionata);
     }
 
-    public boolean confermaPrenotazione(Long idMedico, Long idFascia, String emailLoggato, boolean prenotaPerAltro, String nomeAltro, String cognomeAltro) {
-        return GestoreVisite.getInstance().prenotaVisita(idMedico, idFascia, emailLoggato, prenotaPerAltro, nomeAltro, cognomeAltro);
+    public boolean confermaPrenotazione(Long idMedico, Long idFascia, Long idPaziente, String telefonoVisita, boolean prenotaPerAltro, String nomeAltro, String cognomeAltro) {
+        return GestoreVisite.getInstance().prenotaVisita(idMedico, idFascia, idPaziente, telefonoVisita, prenotaPerAltro, nomeAltro, cognomeAltro);
     }
 }
