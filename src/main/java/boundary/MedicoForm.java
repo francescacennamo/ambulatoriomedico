@@ -25,7 +25,6 @@ public class MedicoForm {
     private JTextPane textPane1;
     private JLabel titoloLabel;
     private JLabel disegnoLabel;
-    private JLabel testoLabel;
     private Long idMedico;
     private JFrame currentFrame;
 
@@ -180,14 +179,14 @@ public class MedicoForm {
         Font titoloLabelFont = this.$$$getFont$$$("Arial Rounded MT Bold", Font.BOLD, 20, titoloLabel.getFont());
         if (titoloLabelFont != null) titoloLabel.setFont(titoloLabelFont);
         titoloLabel.setForeground(new Color(-1));
-        titoloLabel.setText("Specialisti nella diagnosi al servizio della tua salute");
+        titoloLabel.setText("Benvenuto/a nel tuo studio digitale");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(0, 120, 0, 0);
+        gbc.insets = new Insets(10, 210, 0, 0);
         panel2.add(titoloLabel, gbc);
         disegnoLabel = new JLabel();
         disegnoLabel.setText("");
@@ -195,20 +194,8 @@ public class MedicoForm {
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridheight = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(30, 0, 30, 0);
+        gbc.insets = new Insets(30, 150, 30, 0);
         panel2.add(disegnoLabel, gbc);
-        testoLabel = new JLabel();
-        Font testoLabelFont = this.$$$getFont$$$("Arial Rounded MT Bold", Font.PLAIN, 14, testoLabel.getFont());
-        if (testoLabelFont != null) testoLabel.setFont(testoLabelFont);
-        testoLabel.setForeground(new Color(-1));
-        testoLabel.setText("La tua salute in mani sicure");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(150, 30, 0, 0);
-        panel2.add(testoLabel, gbc);
         final JTextPane textPane2 = new JTextPane();
         textPane2.setBackground(new Color(-2310814));
         textPane2.setForeground(new Color(-2310814));
