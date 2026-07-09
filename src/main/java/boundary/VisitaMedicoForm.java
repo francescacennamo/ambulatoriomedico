@@ -45,14 +45,11 @@ public class VisitaMedicoForm {
         } else {
             System.err.println("Errore: Impossibile trovare il file del logo.");
         }
-
         annullaButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 currentFrame.dispose();      // Chiude VisitaMedicoForm
-
-                previousFrame.setVisible(true); // Mostra di nuovo MedicoForm
+                previousFrame.setVisible(true);
             }
         });
     }
