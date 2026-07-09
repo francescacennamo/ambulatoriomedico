@@ -8,13 +8,14 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Map;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import java.net.URL;
 
 public class VisitaMedicoForm {
     private JPanel contentPane;
@@ -22,6 +23,7 @@ public class VisitaMedicoForm {
     private JScrollPane scorrimento;
     private JPanel PanelCentrale;
     private JLabel logoLabel;
+    private JButton annullaButton;
     private Long idMedico;
     private JFrame previousFrame;
     private JFrame currentFrame;
@@ -44,6 +46,15 @@ public class VisitaMedicoForm {
             System.err.println("Errore: Impossibile trovare il file del logo.");
         }
 
+        annullaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                currentFrame.dispose();      // Chiude VisitaMedicoForm
+
+                previousFrame.setVisible(true); // Mostra di nuovo MedicoForm
+            }
+        });
     }
 
     public JFrame apriForm() {
@@ -95,7 +106,6 @@ public class VisitaMedicoForm {
     }
 
     private JPanel creaSchedaVisita(Map<String, Object> visita) {
-
         JPanel card = new JPanel();
 
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -116,11 +126,23 @@ public class VisitaMedicoForm {
         JLabel stato = new JLabel("Stato: " + visita.get("stato"));
         stato.setForeground(new Color(33, 150, 243));
         stato.setFont(new Font("Arial", Font.BOLD, 13));
+        String nomeBeneficiario = (String) visita.get("beneficiarioNome");
+        String cognomeBeneficiario = (String) visita.get("beneficiarioCognome");
+        String testoBeneficiario;
+        if (nomeBeneficiario == null || nomeBeneficiario.isBlank()) {
+            testoBeneficiario = "Beneficiario: il paziente";
+        } else {
+            testoBeneficiario = "Beneficiario: " + nomeBeneficiario + " " + cognomeBeneficiario;
+        }
+
+        JLabel beneficiario = new JLabel(testoBeneficiario);
         card.add(paziente);
         card.add(Box.createVerticalStrut(8));
         card.add(data);
         card.add(Box.createVerticalStrut(5));
         card.add(stato);
+        card.add(Box.createVerticalStrut(5));
+        card.add(beneficiario);
         return card;
     }
 
@@ -140,43 +162,41 @@ public class VisitaMedicoForm {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         JPanel1 = new JPanel();
-        JPanel1.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
+        JPanel1.setLayout(new GridLayoutManager(4, 3, new Insets(0, 0, 0, 0), -1, -1));
         JPanel1.setBackground(new Color(-15906911));
-        contentPane.add(JPanel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        contentPane.add(JPanel1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         Font label1Font = this.$$$getFont$$$("Arial", Font.BOLD, 28, label1.getFont());
         if (label1Font != null) label1.setFont(label1Font);
         label1.setForeground(new Color(-1));
         label1.setText("AREA RISERVATA MEDICO");
-        JPanel1.add(label1, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        JPanel1.add(label1, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         Font label2Font = this.$$$getFont$$$("Arial", -1, 14, label2.getFont());
         if (label2Font != null) label2.setFont(label2Font);
         label2.setForeground(new Color(-5329488));
         label2.setText("Visualizza tutte le visite prenotate");
-        JPanel1.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        JPanel1.add(label2, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         Font label3Font = this.$$$getFont$$$("Arial", Font.BOLD, 18, label3.getFont());
         if (label3Font != null) label3.setFont(label3Font);
         label3.setForeground(new Color(-1));
         label3.setText("Le mie visite");
-        JPanel1.add(label3, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        JPanel1.add(label3, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         scorrimento = new JScrollPane();
-        JPanel1.add(scorrimento, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        JPanel1.add(scorrimento, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         PanelCentrale = new JPanel();
         PanelCentrale.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         PanelCentrale.setBackground(new Color(-15906911));
         scorrimento.setViewportView(PanelCentrale);
-        final JLabel label4 = new JLabel();
-        label4.setBackground(new Color(-1));
-        label4.setForeground(new Color(-16764058));
-        label4.setText("Filtra per");
-        JPanel1.add(label4, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         logoLabel = new JLabel();
         logoLabel.setText("Label");
         contentPane.add(logoLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        annullaButton = new JButton();
+        annullaButton.setText("Annulla");
+        contentPane.add(annullaButton, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
