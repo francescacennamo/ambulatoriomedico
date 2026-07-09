@@ -175,7 +175,7 @@ public class VisitaMedicoForm {
         if (label2Font != null) label2.setFont(label2Font);
         label2.setForeground(new Color(-5329488));
         label2.setText("Visualizza tutte le visite prenotate");
-        JPanel1.add(label2, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        JPanel1.add(label2, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         Font label3Font = this.$$$getFont$$$("Arial", Font.BOLD, 18, label3.getFont());
         if (label3Font != null) label3.setFont(label3Font);
