@@ -17,7 +17,6 @@ public class GestoreUtente {
         this.ruoli = new HashMap<>();
         ruoli.put("entity.Medico", "MEDICO");
         ruoli.put("entity.Paziente", "PAZIENTE");
-        ruoli.put("entity.Amministratore", "AMMINISTRATORE");
     }
 
     public static GestoreUtente getInstance() {
@@ -58,8 +57,7 @@ public class GestoreUtente {
             return datiAnagrafici;
         }
 
-        Paziente p = gestorePersistenza.cercaPrimoPerCampi(
-                Paziente.class, Map.of("email", email.trim()));
+        Paziente p = gestorePersistenza.cercaPrimoPerCampi(Paziente.class, Map.of("email", email.trim()));
 
         if (p != null) {
             datiAnagrafici.put("id", p.getId().toString());

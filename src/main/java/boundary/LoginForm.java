@@ -73,11 +73,7 @@ public class LoginForm {
                 Map<String,String> dati = controller.ottieniAnagraficaMedico(email.trim());
                 String idMedico = dati.getOrDefault ("id", "0");
                 Long id = Long.parseLong(idMedico);
-                String nomeMedico = dati.getOrDefault("nome", "Utente");
-                String cognomeMedico = dati.getOrDefault("cognome", "Medico");
-                String emailMedico = dati.getOrDefault("email", email.trim());
-                String recapitoMedico = dati.getOrDefault("recapito", "");
-                MedicoForm medicoForm =  new MedicoForm(id, nomeMedico,cognomeMedico,emailMedico,recapitoMedico);
+                MedicoForm medicoForm =  new MedicoForm(id);
                 medicoForm.apriForm();
                 break;
 

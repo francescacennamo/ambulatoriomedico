@@ -27,18 +27,10 @@ public class MedicoForm {
     private JLabel disegnoLabel;
     private JLabel testoLabel;
     private Long idMedico;
-    private String nome;
-    private String cognome;
-    private String email;
-    private String recapito;
     private JFrame currentFrame;
 
-    public MedicoForm(Long id, String nome, String cognome, String email, String recapito) {
-        this.idMedico=id;
-        this.nome = nome;
-        this.cognome = cognome;
-        this.email = email;
-        this.recapito = recapito;
+    public MedicoForm(Long id) {
+        this.idMedico = id;
 
         URL imgURL = getClass().getResource("/logo.png");
         URL imgURL1 = getClass().getResource("/disegnosenzasfondo.png");
@@ -78,11 +70,8 @@ public class MedicoForm {
         }
 
         logoutButton.addActionListener(e -> {
-
             currentFrame.dispose();
-
             new LoginForm().apriLoginForm();
-
         });
 
         leMieVisiteButton.addActionListener(e -> {

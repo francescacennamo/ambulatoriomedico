@@ -27,25 +27,15 @@ public class VisitaMedicoForm {
     private JFrame currentFrame;
 
     public VisitaMedicoForm(Long idMedico, JFrame previousFrame) {
-
         this.idMedico = idMedico;
         this.previousFrame = previousFrame;
-
         scorrimento.getVerticalScrollBar().setUnitIncrement(20);
-
-
         URL imgURL = getClass().getResource("/logo.png");
-
         if (imgURL != null) {
-
             ImageIcon originalIcon = new ImageIcon(imgURL);
-
-
             Image scaledImage = originalIcon.getImage().getScaledInstance(200, -1, Image.SCALE_SMOOTH);
-
             ImageIcon resizedIcon = new ImageIcon(scaledImage);
             logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
             // 5. Rimuovi eventuale testo residuo e applica l'icona alla JLabel del Designer
             logoLabel.setText("");
             logoLabel.setIcon(resizedIcon);
@@ -82,14 +72,10 @@ public class VisitaMedicoForm {
         PanelCentrale.removeAll();
         //dice a swing di mettere le card una sotto l'altra
         PanelCentrale.setLayout(new BoxLayout(PanelCentrale, BoxLayout.Y_AXIS));
-
         VisitaController controller = new VisitaController();
-
         List<Long> ids = controller.getIdVisitePerMedico(idMedico);
-
         for (Long id : ids) {
-            Map<String, Object> visita =
-                    controller.getDettaglioVisita(id);
+            Map<String, Object> visita = controller.getDettaglioVisita(id);
             JPanel card = creaSchedaVisita(visita);
             PanelCentrale.add(card);
             //metto uno spazio tra una card e l'altra
@@ -123,26 +109,18 @@ public class VisitaMedicoForm {
                 BorderFactory.createEmptyBorder(15, 20, 15, 20)
         ));
 
-        JLabel paziente =
-                new JLabel((String) visita.get("paziente"));
-
+        JLabel paziente = new JLabel((String) visita.get("paziente"));
         paziente.setFont(new Font("Arial", Font.BOLD, 18));
-
-        JLabel data =
-                new JLabel(visita.get("data") + "   " + visita.get("orario"));
-
+        JLabel data = new JLabel(visita.get("data") + "   " + visita.get("orario"));
         data.setFont(new Font("Arial", Font.PLAIN, 14));
-
         JLabel stato = new JLabel("Stato: " + visita.get("stato"));
         stato.setForeground(new Color(33, 150, 243));
         stato.setFont(new Font("Arial", Font.BOLD, 13));
-
         card.add(paziente);
         card.add(Box.createVerticalStrut(8));
         card.add(data);
         card.add(Box.createVerticalStrut(5));
         card.add(stato);
-
         return card;
     }
 
