@@ -8,7 +8,7 @@ public class Visita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "fasciaoraria_id")
     private FasciaOraria fasciaOraria;
 

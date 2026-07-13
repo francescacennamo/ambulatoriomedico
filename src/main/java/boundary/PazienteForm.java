@@ -5,6 +5,8 @@ import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Locale;
 import javax.swing.ImageIcon;
 import java.net.URL;
@@ -63,9 +65,14 @@ public class PazienteForm {
             SwingUtilities.invokeLater(() -> new LoginForm().apriLoginForm());
         });
 
-        leMieVisiteButton.addActionListener(e -> {
-            // LA TUA COLLEGA USA L'ID QUI
-            // es: new VisitePazienteForm(idLoggato).apriForm();
+
+        leMieVisiteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(contentPane);
+
+                new VisitaPazienteForm(idLoggato, currentFrame).apriForm();
+            }
         });
     }
 
@@ -158,6 +165,7 @@ public class PazienteForm {
         contentPane.add(logoLabel, gbc);
         textPane1 = new JTextPane();
         textPane1.setBackground(new Color(-2310814));
+        textPane1.setEditable(false);
         textPane1.setForeground(new Color(-2310814));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;

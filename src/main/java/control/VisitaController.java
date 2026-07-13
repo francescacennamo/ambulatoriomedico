@@ -13,4 +13,15 @@ public class VisitaController {
     public Map<String, Object> getDettaglioVisita(Long idVisita) {
         return GestoreVisite.getInstance().getDettaglioVisita(idVisita);
     }
+    // Trova tutte le visite del paziente
+    public List<Long> getIdVisitePerPaziente(Long idPaziente) {
+        return GestoreVisite.getInstance().getIdVisitePerPaziente(idPaziente);
+    }
+
+    // Annulla la visita
+    public boolean annullaVisita(Long idVisita) {
+        return GestoreVisite.getInstance().annullaVisita(idVisita);
+    }
+
+
 }

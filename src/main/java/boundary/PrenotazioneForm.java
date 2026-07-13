@@ -6,25 +6,20 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Calendar;
-import java.util.Date;
-import javax.swing.ImageIcon;
-import java.net.URL;
-
-import com.toedter.calendar.JDateChooser;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+
+import com.toedter.calendar.JDateChooser;
 
 @SuppressWarnings("unchecked")
 public class PrenotazioneForm {
@@ -46,13 +41,12 @@ public class PrenotazioneForm {
     private JTextField textRecapito;
     private JLabel labelTel;
     private JPanel panelData;
-    private JDateChooser dateChooser; // Questo è il nostro nuovo calendario!
+    private JDateChooser dateChooser;
 
     private PrenotazioneController controller;
     private Map<Long, String> mappaSpecializzazioni;
     private Map<Long, String> mappaMedici;
     private Map<Long, String> mappaFasceOrarie;
-
     private Long idPazienteLoggato;
 
     public PrenotazioneForm(Long id) {
@@ -60,33 +54,28 @@ public class PrenotazioneForm {
         this.controller = new PrenotazioneController();
         this.idPazienteLoggato = id;
 
+        // Configurazione Anagrafica
         Map<String, String> anagrafica = controller.ottieniAnagraficaPazientePerId(id);
-
         textNome.setText(anagrafica.getOrDefault("nome", ""));
         textCognome.setText(anagrafica.getOrDefault("cognome", ""));
         textEmail.setText(anagrafica.getOrDefault("email", ""));
         textRecapito.setText(anagrafica.getOrDefault("recapito", ""));
 
-        // MODIFICA: 'textRecapito' NON è più bloccato. Lasciamo l'utente libero di scriverci!
         textNome.setEditable(false);
         textCognome.setEditable(false);
         textEmail.setEditable(false);
 
-
-        // INIZIALIZZAZIONE CALENDARIO (JDateChooser)
+        // Configurazione Calendario
         dateChooser = new JDateChooser();
-        dateChooser.setDate(new Date()); // Imposta la data di oggi come default
-        dateChooser.setMinSelectableDate(new Date()); // BONUS UX: Impedisce di selezionare giorni passati!
-
+        dateChooser.setDate(new Date());
+        dateChooser.setMinSelectableDate(new Date());
         Calendar cal1 = Calendar.getInstance();
         cal1.add(Calendar.YEAR, 2);
-        dateChooser.setMaxSelectableDate(cal1.getTime()); // Massimo 2 anni nel futuro
-
-        // Inseriamo il calendario dentro il pannello grafico creato nel Designer
+        dateChooser.setMaxSelectableDate(cal1.getTime());
         panelData.setLayout(new BorderLayout());
         panelData.add(dateChooser, BorderLayout.CENTER);
 
-
+        // Logo
         URL imgURL = getClass().getResource("/logo.png");
         if (imgURL != null) {
             Image scaledImage = new ImageIcon(imgURL).getImage().getScaledInstance(220, -1, Image.SCALE_SMOOTH);
@@ -97,9 +86,10 @@ public class PrenotazioneForm {
 
         popolaSpecializzazioni();
 
+        // Listeners
         cmbSpecializzazioni.addActionListener(e -> {
             String nome = (String) cmbSpecializzazioni.getSelectedItem();
-            if (nome != null) popolaMedici(trovaIdSpecDaNome(nome));
+            if (nome != null && !nome.isEmpty()) popolaMedici(trovaIdSpecDaNome(nome));
         });
 
         cmbMediciPerSpec.addActionListener(e -> {
@@ -118,75 +108,53 @@ public class PrenotazioneForm {
             contentPane.repaint();
         });
 
-        // Ascolta quando l'utente clicca su un giorno nel calendario
-        dateChooser.addPropertyChangeListener("date", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String medico = (String) cmbMediciPerSpec.getSelectedItem();
-                if (medico != null) popolaFasceOrarie(trovaIdMedicoDaNome(medico));
-            }
+        dateChooser.addPropertyChangeListener("date", evt -> {
+            String medico = (String) cmbMediciPerSpec.getSelectedItem();
+            if (medico != null) popolaFasceOrarie(trovaIdMedicoDaNome(medico));
         });
 
-
-        confermaButton.addActionListener(e -> {
-            String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
-            String orarioSelezionato = (String) cmbFasciaOraria.getSelectedItem();
-            String telefonoVisita = textRecapito.getText().trim();
-
-            // Errore 1: Campi obbligatori mancanti
-            if (medicoSelezionato == null || orarioSelezionato == null || telefonoVisita.isEmpty()) {
-                mostraMessaggioPersonalizzato(
-                        "Compilare i campi obbligatori (Medico, Fascia, Recapito Telefonico).",
-                        "Errore",
-                        JOptionPane.ERROR_MESSAGE,
-                        false // Resta sulla form
-                );
-                return;
-            }
-
-            Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
-            Long idFascia = trovaIdFasciaDaOrario(orarioSelezionato);
-            boolean prenotaPerAltro = siCheckBox.isSelected();
-            String nomeAltro = textNomeAltro.getText().trim();
-            String cognomeAltro = textCognomeAltro.getText().trim();
-
-            // Errore 2: Dati beneficiario mancanti
-            if (prenotaPerAltro && (nomeAltro.isEmpty() || cognomeAltro.isEmpty())) {
-                mostraMessaggioPersonalizzato(
-                        "Inserisci Nome e Cognome della persona per cui stai prenotando.",
-                        "Dati Mancanti",
-                        JOptionPane.WARNING_MESSAGE,
-                        false // Resta sulla form
-                );
-                return;
-            }
-
-            boolean successo = controller.confermaPrenotazione(idMedico, idFascia, idPazienteLoggato, telefonoVisita, prenotaPerAltro, nomeAltro, cognomeAltro);
-
-            if (successo) {
-                // Caso Successo: Mostra il messaggio verde/informativo e torna al PazienteForm
-                mostraMessaggioPersonalizzato(
-                        "Visita prenotata con successo!",
-                        "Conferma",
-                        JOptionPane.INFORMATION_MESSAGE,
-                        true // TORNA AL PAZIENTE
-                );
-            } else {
-                // Errore 3: Fallimento database/controller
-                mostraMessaggioPersonalizzato(
-                        "Impossibile completare la prenotazione. Controllare i dati.",
-                        "Errore",
-                        JOptionPane.ERROR_MESSAGE,
-                        false // Resta sulla form
-                );
-            }
-        });
+        confermaButton.addActionListener(e -> gestisciConferma());
 
         annullaButton.addActionListener(e -> {
             Window win = SwingUtilities.getWindowAncestor(contentPane);
             if (win != null) win.dispose();
             SwingUtilities.invokeLater(() -> new PazienteForm(idPazienteLoggato).apriForm());
         });
+    }
+
+    private void gestisciConferma() {
+        String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
+        String orarioSelezionato = (String) cmbFasciaOraria.getSelectedItem();
+        String telefonoVisita = textRecapito.getText().trim();
+
+        if (orarioSelezionato != null && orarioSelezionato.equals("Non ci sono fasce orarie disponibili")) {
+            mostraMessaggioPersonalizzato("Seleziona una data valida. Non ci sono fasce orarie disponibili.", "Attenzione", JOptionPane.WARNING_MESSAGE, false);
+            return;
+        }
+
+        if (medicoSelezionato == null || orarioSelezionato == null || telefonoVisita.isEmpty()) {
+            mostraMessaggioPersonalizzato("Compilare i campi obbligatori (Medico, Fascia, Recapito).", "Errore", JOptionPane.ERROR_MESSAGE, false);
+            return;
+        }
+
+        Long idMedico = trovaIdMedicoDaNome(medicoSelezionato);
+        Long idFascia = trovaIdFasciaDaOrario(orarioSelezionato);
+        boolean prenotaPerAltro = siCheckBox.isSelected();
+        String nomeAltro = textNomeAltro.getText().trim();
+        String cognomeAltro = textCognomeAltro.getText().trim();
+
+        if (prenotaPerAltro && (nomeAltro.isEmpty() || cognomeAltro.isEmpty())) {
+            mostraMessaggioPersonalizzato("Inserisci Nome e Cognome della persona per cui stai prenotando.", "Dati Mancanti", JOptionPane.WARNING_MESSAGE, false);
+            return;
+        }
+
+        boolean successo = controller.confermaPrenotazione(idMedico, idFascia, idPazienteLoggato, telefonoVisita, prenotaPerAltro, nomeAltro, cognomeAltro);
+
+        if (successo) {
+            mostraMessaggioPersonalizzato("Visita prenotata con successo!", "Conferma", JOptionPane.INFORMATION_MESSAGE, true);
+        } else {
+            mostraMessaggioPersonalizzato("Impossibile completare la prenotazione. Controllare i dati.", "Errore", JOptionPane.ERROR_MESSAGE, false);
+        }
     }
 
     public JPanel getContentPane() {
@@ -226,7 +194,6 @@ public class PrenotazioneForm {
         cmbFasciaOraria.removeAllItems();
         if (idMedico == null) return;
 
-        // Molto più pulito e coerente così:
         Date dataSelezionata = dateChooser.getDate();
         if (dataSelezionata == null) return;
 
@@ -235,8 +202,15 @@ public class PrenotazioneForm {
                 .toLocalDate();
 
         this.mappaFasceOrarie = controller.ottieniFasceDisponibili(idMedico, localDate);
-        for (String orario : mappaFasceOrarie.values()) {
-            cmbFasciaOraria.addItem(orario);
+
+        if (mappaFasceOrarie.isEmpty()) {
+            cmbFasciaOraria.addItem("Non ci sono fasce orarie disponibili");
+            cmbFasciaOraria.setEnabled(false);
+        } else {
+            cmbFasciaOraria.setEnabled(true);
+            for (String orario : mappaFasceOrarie.values()) {
+                cmbFasciaOraria.addItem(orario);
+            }
         }
     }
 
@@ -258,11 +232,12 @@ public class PrenotazioneForm {
         frame.setVisible(true);
         return frame;
     }
-    // METODO HELPER: Crea un popup personalizzato con il bottone del colore dello stile della clinica
+
+    // METODO HELPER AGGIORNATO: Chiude correttamente anche con la X
     private void mostraMessaggioPersonalizzato(String messaggio, String titolo, int tipoMessaggio, boolean tornaAlPaziente) {
         JButton btnOk = new JButton("OK");
-        btnOk.setBackground(new Color(-10828087)); // Sfondo colorato
-        btnOk.setForeground(Color.WHITE);          // Testo bianco
+        btnOk.setBackground(new Color(-10828087));
+        btnOk.setForeground(Color.WHITE);
         btnOk.setFont(new Font("Arial", Font.BOLD, 14));
         btnOk.setFocusPainted(false);
 
@@ -277,19 +252,20 @@ public class PrenotazioneForm {
 
         JDialog dialog = optionPane.createDialog(contentPane, titolo);
 
-        btnOk.addActionListener(actionEvent -> {
-            dialog.dispose(); // Chiude sempre il popup
+        // L'azione del bottone OK serve solo a chiudere il popup
+        btnOk.addActionListener(actionEvent -> dialog.dispose());
 
-            // Se l'operazione è andata a buon fine (true), chiude la form e torna indietro
-            if (tornaAlPaziente) {
-                Window win = SwingUtilities.getWindowAncestor(contentPane);
-                if (win != null) win.dispose();
-                SwingUtilities.invokeLater(() -> new PazienteForm(idPazienteLoggato).apriForm());
-            }
-        });
-
+        // L'esecuzione si blocca qui finché il popup non viene chiuso (premendo OK o la X)
         dialog.setVisible(true);
+
+        // Il codice riprende da qui dopo la chiusura del popup
+        if (tornaAlPaziente) {
+            Window win = SwingUtilities.getWindowAncestor(contentPane);
+            if (win != null) win.dispose();
+            SwingUtilities.invokeLater(() -> new PazienteForm(idPazienteLoggato).apriForm());
+        }
     }
+
     /**
      * Method generated by IntelliJ IDEA GUI Designer
      * >>> IMPORTANT!! <<<
