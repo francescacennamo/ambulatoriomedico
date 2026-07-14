@@ -60,6 +60,15 @@ public class LoginForm {
             return;
         }
 
+        if (email.length() >= 1000 || password.length() >= 1000) {
+            JOptionPane.showMessageDialog(null, "Email e password non possono superare i 1000 caratteri", "Errore", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!email.contains("@")) {
+            JOptionPane.showMessageDialog(null, "Email non valida: deve contenere @", "Errore", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         LoginController controller = new LoginController();
         String tipoUtente = controller.login(email.trim(), password);
 
@@ -79,10 +88,9 @@ public class LoginForm {
 
             case "PAZIENTE":
                 Map<String, String> anagraficaPaziente = controller.ottieniAnagraficaPaziente(email.trim());
-                String idPazienteStr = anagraficaPaziente.getOrDefault("id", "0");
-                Long idPaziente = Long.parseLong(idPazienteStr);
-
-                PazienteForm pazienteForm = new PazienteForm(idPaziente);
+                String idPaziente = anagraficaPaziente.getOrDefault("id", "0");
+                Long idP= Long.parseLong(idPaziente);
+                PazienteForm pazienteForm = new PazienteForm(idP);
                 pazienteForm.apriForm();
                 break;
 
