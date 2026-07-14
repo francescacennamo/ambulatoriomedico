@@ -36,6 +36,7 @@ public class PrenotazioneForm {
     private JTextField textRecapito;
     private JLabel labelTel;
     private JPanel panelData;
+    private JTextArea textAreaInfoDisponibilita;
     private JDateChooser dateChooser;
 
     private PrenotazioneController controller;
@@ -70,8 +71,11 @@ public class PrenotazioneForm {
         cal1.add(Calendar.MONTH, 3);
         dateChooser.setMaxSelectableDate(cal1.getTime());
 
+        panelData.removeAll();
         panelData.setLayout(new BorderLayout());
         panelData.add(dateChooser, BorderLayout.CENTER);
+        panelData.revalidate();
+        panelData.repaint();
 
         // Logo
         URL imgURL = getClass().getResource("/logo.png");
@@ -87,23 +91,67 @@ public class PrenotazioneForm {
         // Listeners
         cmbSpecializzazioni.addActionListener(e -> {
             String nome = (String) cmbSpecializzazioni.getSelectedItem();
-            if (nome != null && !nome.isEmpty()) popolaMedici(trovaIdSpecDaNome(nome));
+
+            if (nome == null || nome.equals("-- Seleziona una specializzazione --")) {
+                cmbMediciPerSpec.removeAllItems();
+                cmbFasciaOraria.removeAllItems();
+                textAreaInfoDisponibilita.setText("");
+                return;
+            }
+
+            popolaMedici(trovaIdSpecDaNome(nome));
         });
 
         cmbMediciPerSpec.addActionListener(e -> {
+
             String medico = (String) cmbMediciPerSpec.getSelectedItem();
-            if (medico != null) popolaFasceOrarie(trovaIdMedicoDaNome(medico));
-            else cmbFasciaOraria.removeAllItems();
+
+            if (medico == null || medico.equals("-- Seleziona un medico --")) {
+                cmbFasciaOraria.removeAllItems();
+                textAreaInfoDisponibilita.setText("");
+                return;
+            }
+
+            Long idMedico = trovaIdMedicoDaNome(medico);
+
+            popolaFasceOrarie(idMedico);
+
+            Map<String, String> disponibilita =
+                    controller.ottieniDisponibilitaMedico(idMedico);
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("Il medico fa studio:\n");
+
+            for (Map.Entry<String, String> entry : disponibilita.entrySet()) {
+
+                sb.append("• ")
+                        .append(entry.getKey())
+                        .append(" dalle ")
+                        .append(entry.getValue().replace(" - ", " alle "))
+                        .append("\n");
+
+            }
+
+            textAreaInfoDisponibilita.setText(sb.toString());
+            textAreaInfoDisponibilita.setLineWrap(true);
+            textAreaInfoDisponibilita.setWrapStyleWord(true);
+            textAreaInfoDisponibilita.setRows(5);
+
+            aggiornaDimensioneFinestra();
+
         });
 
         siCheckBox.addActionListener(e -> {
+
             boolean spuntata = siCheckBox.isSelected();
+
             labelNomeAltro.setVisible(spuntata);
             textNomeAltro.setVisible(spuntata);
             cognomeAltroLabel.setVisible(spuntata);
             textCognomeAltro.setVisible(spuntata);
-            contentPane.revalidate();
-            contentPane.repaint();
+
+            aggiornaDimensioneFinestra();
         });
 
         dateChooser.addPropertyChangeListener("date", evt -> {
@@ -119,7 +167,21 @@ public class PrenotazioneForm {
             SwingUtilities.invokeLater(() -> new PazienteForm(idPazienteLoggato).apriForm());
         });
     }
+    private void aggiornaDimensioneFinestra() {
 
+        contentPane.revalidate();
+        contentPane.repaint();
+
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(contentPane);
+
+        if (frame != null) {
+
+            frame.pack();
+
+            // mantiene la finestra centrata
+            frame.setLocationRelativeTo(null);
+        }
+    }
     private void gestisciConferma() {
         String medicoSelezionato = (String) cmbMediciPerSpec.getSelectedItem();
         String orarioSelezionato = (String) cmbFasciaOraria.getSelectedItem();
@@ -161,9 +223,18 @@ public class PrenotazioneForm {
 
     private void popolaSpecializzazioni() {
         mappaSpecializzazioni = controller.ottieniMappaSpecializzazioni();
+
         cmbSpecializzazioni.removeAllItems();
-        for (String nome : mappaSpecializzazioni.values()) cmbSpecializzazioni.addItem(nome);
-        cmbSpecializzazioni.setSelectedIndex(-1);
+
+        // Voce iniziale
+        cmbSpecializzazioni.addItem("-- Seleziona una specializzazione --");
+
+        for (String nome : mappaSpecializzazioni.values()) {
+            cmbSpecializzazioni.addItem(nome);
+        }
+
+        // Seleziona la voce iniziale
+        cmbSpecializzazioni.setSelectedIndex(0);
     }
 
     private Long trovaIdSpecDaNome(String nomeCercato) {
@@ -176,8 +247,21 @@ public class PrenotazioneForm {
 
     private void popolaMedici(Long idSpec) {
         cmbMediciPerSpec.removeAllItems();
+
+        // Voce iniziale
+        cmbMediciPerSpec.addItem("-- Seleziona un medico --");
+
         mappaMedici = controller.ottieniMediciPerSpecializzazione(idSpec);
-        for (String nome : mappaMedici.values()) cmbMediciPerSpec.addItem(nome);
+
+        for (String nome : mappaMedici.values()) {
+            cmbMediciPerSpec.addItem(nome);
+        }
+
+        // Seleziona la voce iniziale
+        cmbMediciPerSpec.setSelectedIndex(0);
+
+        cmbFasciaOraria.removeAllItems();
+        textAreaInfoDisponibilita.setText("");
     }
 
     private Long trovaIdMedicoDaNome(String nomeCercato) {
@@ -221,13 +305,17 @@ public class PrenotazioneForm {
     }
 
     public JFrame apriPrenotazioneForm() {
+
         JFrame frame = new JFrame("Prenotazione Visita");
+
         frame.setContentPane(contentPane);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
+
         frame.pack();
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
         return frame;
     }
 
@@ -275,11 +363,11 @@ public class PrenotazioneForm {
         Font contentPaneFont = this.$$$getFont$$$(null, -1, -1, contentPane.getFont());
         if (contentPaneFont != null) contentPane.setFont(contentPaneFont);
         contentPane.setForeground(new Color(-14793370));
-        contentPane.setInheritsPopupMenu(false);
-        contentPane.setMaximumSize(new Dimension(900, 660));
+        contentPane.setInheritsPopupMenu(true);
+        contentPane.setMaximumSize(new Dimension(900, 750));
         contentPane.setMinimumSize(new Dimension(700, 660));
         contentPane.setOpaque(true);
-        contentPane.setPreferredSize(new Dimension(800, 600));
+        contentPane.setPreferredSize(new Dimension(800, 660));
         contentPane.setRequestFocusEnabled(true);
         contentPane.setVisible(true);
         labelTitolo = new JLabel();
@@ -337,19 +425,6 @@ public class PrenotazioneForm {
         cmbSpecializzazioni.setEnabled(true);
         cmbSpecializzazioni.setFocusable(true);
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        defaultComboBoxModel1.addElement("");
-        defaultComboBoxModel1.addElement("Allergologia");
-        defaultComboBoxModel1.addElement("Cardiologia");
-        defaultComboBoxModel1.addElement("Dermatologia");
-        defaultComboBoxModel1.addElement("Endocrinologia");
-        defaultComboBoxModel1.addElement("Gastroenterologia");
-        defaultComboBoxModel1.addElement("Geriatria");
-        defaultComboBoxModel1.addElement("Ginecologia e Ostetricia");
-        defaultComboBoxModel1.addElement("Neurologia");
-        defaultComboBoxModel1.addElement("Oculistica");
-        defaultComboBoxModel1.addElement("Ortopedia");
-        defaultComboBoxModel1.addElement("Pediatria");
-        defaultComboBoxModel1.addElement("Pneumologia");
         cmbSpecializzazioni.setModel(defaultComboBoxModel1);
         cmbSpecializzazioni.setOpaque(true);
         cmbSpecializzazioni.setRequestFocusEnabled(true);
@@ -413,7 +488,7 @@ public class PrenotazioneForm {
         labelPrenAltro.setText("Prenoto per un'altra persona");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 11;
+        gbc.gridy = 12;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 10, 10, 0);
         contentPane.add(labelPrenAltro, gbc);
@@ -425,7 +500,7 @@ public class PrenotazioneForm {
         siCheckBox.setText("Sì");
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 11;
+        gbc.gridy = 12;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         contentPane.add(siCheckBox, gbc);
@@ -458,14 +533,14 @@ public class PrenotazioneForm {
         labelData.setText("Data");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 9;
+        gbc.gridy = 10;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 10, 10, 0);
         contentPane.add(labelData, gbc);
         cmbFasciaOraria = new JComboBox();
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 10;
+        gbc.gridy = 11;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -478,7 +553,7 @@ public class PrenotazioneForm {
         labelFasciaOraria.setText("Fascia Oraria");
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 10;
+        gbc.gridy = 11;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 10, 10, 0);
         contentPane.add(labelFasciaOraria, gbc);
@@ -490,7 +565,7 @@ public class PrenotazioneForm {
         labelNomeAltro.setVisible(false);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 12;
+        gbc.gridy = 13;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 10, 10, 0);
         contentPane.add(labelNomeAltro, gbc);
@@ -498,7 +573,7 @@ public class PrenotazioneForm {
         textNomeAltro.setVisible(false);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 12;
+        gbc.gridy = 13;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -512,7 +587,7 @@ public class PrenotazioneForm {
         cognomeAltroLabel.setVisible(false);
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.gridy = 13;
+        gbc.gridy = 14;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 10, 10, 0);
         contentPane.add(cognomeAltroLabel, gbc);
@@ -520,7 +595,7 @@ public class PrenotazioneForm {
         textCognomeAltro.setVisible(false);
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 13;
+        gbc.gridy = 14;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -534,7 +609,7 @@ public class PrenotazioneForm {
         confermaButton.setText("Conferma");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 14;
+        gbc.gridy = 15;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(30, 50, 10, 0);
         contentPane.add(confermaButton, gbc);
@@ -546,7 +621,7 @@ public class PrenotazioneForm {
         annullaButton.setText("Annulla");
         gbc = new GridBagConstraints();
         gbc.gridx = 1;
-        gbc.gridy = 15;
+        gbc.gridy = 16;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(0, 50, 10, 0);
         contentPane.add(annullaButton, gbc);
@@ -589,10 +664,21 @@ public class PrenotazioneForm {
         panelData.setForeground(new Color(-1));
         gbc = new GridBagConstraints();
         gbc.gridx = 2;
-        gbc.gridy = 9;
+        gbc.gridy = 10;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(0, 0, 0, 10);
         contentPane.add(panelData, gbc);
+        textAreaInfoDisponibilita = new JTextArea();
+        textAreaInfoDisponibilita.setBackground(new Color(-14793370));
+        textAreaInfoDisponibilita.setEditable(false);
+        Font textAreaInfoDisponibilitaFont = this.$$$getFont$$$("Arial", Font.PLAIN, 10, textAreaInfoDisponibilita.getFont());
+        if (textAreaInfoDisponibilitaFont != null) textAreaInfoDisponibilita.setFont(textAreaInfoDisponibilitaFont);
+        textAreaInfoDisponibilita.setForeground(new Color(-1));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 9;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPane.add(textAreaInfoDisponibilita, gbc);
     }
 
     /**

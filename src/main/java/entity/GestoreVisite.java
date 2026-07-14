@@ -83,7 +83,20 @@ public class GestoreVisite {
             }
         }
     }
+    public Map<String, String> ottieniDisponibilitaMedico(Long idMedico) {
 
+        List<Disponibilita> lista = gestorePersistenza.cercaPerCampi(
+                Disponibilita.class,
+                Map.of("medico.id", idMedico));
+
+        Map<String, String> disponibilita = new LinkedHashMap<>();
+
+        for (Disponibilita d : lista) {
+            disponibilita.put(d.getGiorno(), d.getFasciaOraria());
+        }
+
+        return disponibilita;
+    }
     // ==========================================
     // GESTIONE VISITE (Prenotazione/Annullamento)
     // ==========================================
@@ -141,7 +154,7 @@ public class GestoreVisite {
         d.put("medico", v.getMedico().getNome() + " " + v.getMedico().getCognome());
         d.put("specializzazione", v.getMedico().getSpecializzazione() != null ? v.getMedico().getSpecializzazione().getNome() : "N/D");
 
-        // REINSERITI I DATI DEL PAZIENTE E DEL BENEFICIARIO:
+        // DATI DEL PAZIENTE E DEL BENEFICIARIO:
         d.put("paziente", v.getPaziente().getNome() + " " + v.getPaziente().getCognome());
         d.put("beneficiarioNome", v.getBeneficiarioNome());
         d.put("beneficiarioCognome", v.getBeneficiarioCognome());

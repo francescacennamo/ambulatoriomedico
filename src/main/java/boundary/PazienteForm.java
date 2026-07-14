@@ -112,7 +112,7 @@ public class PazienteForm {
         Font contentPaneFont = this.$$$getFont$$$("Arial", Font.BOLD, 24, contentPane.getFont());
         if (contentPaneFont != null) contentPane.setFont(contentPaneFont);
         contentPane.setForeground(new Color(-14793370));
-        contentPane.setPreferredSize(new Dimension(800, 600));
+        contentPane.setPreferredSize(new Dimension(800, 660));
         prenotaVisitaButton = new JButton();
         prenotaVisitaButton.setBackground(new Color(-10828087));
         Font prenotaVisitaButtonFont = this.$$$getFont$$$("Arial", Font.BOLD, 14, prenotaVisitaButton.getFont());

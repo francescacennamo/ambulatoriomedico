@@ -8,7 +8,7 @@
       <background color="-14793370"/>
       <font name="Arial" size="24" style="1"/>
       <foreground color="-14793370"/>
-      <preferredSize width="800" height="600"/>
+      <preferredSize width="800" height="660"/>
     </properties>
     <border type="none"/>
     <children>
