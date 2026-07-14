@@ -149,8 +149,7 @@ public class GestorePersistenza {
      *
      * La query JPQL viene costruita nel livello database.
      */
-    public <T> List<T> cercaPerCampi(Class<T> classe,
-                                     Map<String, Object> campi) {
+    public <T> List<T> cercaPerCampi(Class<T> classe, Map<String, Object> campi) {
 
         EntityManager em = JpaUtil.getInstance().getEntityManager();
 

@@ -69,6 +69,7 @@ public class LoginForm {
             JOptionPane.showMessageDialog(null, "Email non valida: deve contenere @", "Errore", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         LoginController controller = new LoginController();
         String tipoUtente = controller.login(email.trim(), password);
 
