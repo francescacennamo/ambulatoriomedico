@@ -1,16 +1,11 @@
 package boundary;
 
 import control.PrenotazioneController;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -68,10 +63,13 @@ public class PrenotazioneForm {
         // Configurazione Calendario
         dateChooser = new JDateChooser();
         dateChooser.setDate(new Date());
-        dateChooser.setMinSelectableDate(new Date());
+        dateChooser.setMinSelectableDate(new Date()); // Non permette date passate
+
+        // LIMITA A 3 MESI DA OGGI
         Calendar cal1 = Calendar.getInstance();
-        cal1.add(Calendar.YEAR, 2);
+        cal1.add(Calendar.MONTH, 3);
         dateChooser.setMaxSelectableDate(cal1.getTime());
+
         panelData.setLayout(new BorderLayout());
         panelData.add(dateChooser, BorderLayout.CENTER);
 
@@ -233,7 +231,6 @@ public class PrenotazioneForm {
         return frame;
     }
 
-    // METODO HELPER AGGIORNATO: Chiude correttamente anche con la X
     private void mostraMessaggioPersonalizzato(String messaggio, String titolo, int tipoMessaggio, boolean tornaAlPaziente) {
         JButton btnOk = new JButton("OK");
         btnOk.setBackground(new Color(-10828087));
@@ -252,13 +249,10 @@ public class PrenotazioneForm {
 
         JDialog dialog = optionPane.createDialog(contentPane, titolo);
 
-        // L'azione del bottone OK serve solo a chiudere il popup
         btnOk.addActionListener(actionEvent -> dialog.dispose());
 
-        // L'esecuzione si blocca qui finché il popup non viene chiuso (premendo OK o la X)
         dialog.setVisible(true);
 
-        // Il codice riprende da qui dopo la chiusura del popup
         if (tornaAlPaziente) {
             Window win = SwingUtilities.getWindowAncestor(contentPane);
             if (win != null) win.dispose();

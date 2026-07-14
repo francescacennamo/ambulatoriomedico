@@ -2,7 +2,6 @@ package setup;
 
 import entity.*;
 import database.GestorePersistenza;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +27,20 @@ public class DatiTestClinica {
             registro.registraMedico("Sara", "Greco", "sara.greco@clinica.it", "pass456", "3339876543", "Ortopedia");
         }
 
+        // NUOVI MEDICI AGGIUNTI
+        if (gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "luigi.verdi@clinica.it")) == null) {
+            registro.registraMedico("Luigi", "Verdi", "luigi.verdi@clinica.it", "pass123", "3331112222", "Dermatologia");
+        }
+        if (gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "elena.bruni@clinica.it")) == null) {
+            registro.registraMedico("Elena", "Bruni", "elena.bruni@clinica.it", "pass123", "3333334444", "Oculistica");
+        }
+        if (gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "roberto.gialli@clinica.it")) == null) {
+            registro.registraMedico("Roberto", "Gialli", "roberto.gialli@clinica.it", "pass123", "3335556666", "Neurologia");
+        }
+        if (gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "giulia.viola@clinica.it")) == null) {
+            registro.registraMedico("Giulia", "Viola", "giulia.viola@clinica.it", "pass123", "3337778888", "Pediatria");
+        }
+
         // 2. Registrazione Pazienti tramite Registro
         if (gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "mario.rossi@email.it")) == null) {
             registro.registraPaziente("Mario", "Rossi", "mario.rossi@email.it", "pass789", "3201234567");
@@ -40,59 +53,61 @@ public class DatiTestClinica {
         Medico marco = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "marco.neri@clinica.it"));
         Medico sara = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "sara.greco@clinica.it"));
         Medico dario = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "dario.bianchi@clinica.it"));
-        Paziente mario = gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "mario.rossi@email.it"));
-        Paziente anna = gestore.cercaPrimoPerCampi(Paziente.class, Map.of("email", "anna.bianchi@email.it"));
+        Medico luigi = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "luigi.verdi@clinica.it"));
+        Medico elena = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "elena.bruni@clinica.it"));
+        Medico roberto = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "roberto.gialli@clinica.it"));
+        Medico giulia = gestore.cercaPrimoPerCampi(Medico.class, Map.of("email", "giulia.viola@clinica.it"));
 
-        // NEW: 3b. Inserimento delle Disponibilità generali (il piano orario settimanale dei medici)
+        // 4. Inserimento delle Disponibilità generali (il piano orario settimanale dei medici)
         List<Disponibilita> dispCaricate = gestore.cercaPerCampi(Disponibilita.class, Map.of());
-        if (dispCaricate.isEmpty() && marco != null && sara != null) {
+        if (dispCaricate.isEmpty()) {
 
-            // Definiamo i giorni lavorativi teorici di Marco Neri
-            Disponibilita d1 = new Disponibilita("Lunedì", "09:00 - 12:00");
-            d1.setMedico(marco);
-            Disponibilita d2 = new Disponibilita("Giovedì", "15:00 - 18:00");
-            d2.setMedico(marco);
-
-            // Definiamo i giorni lavorativi teorici di Sara Greco
-            Disponibilita d3 = new Disponibilita("Martedì", "09:00 - 12:00");
-            d3.setMedico(sara);
-            Disponibilita d4 = new Disponibilita("Giovedì", "09:00 - 12:00"); // Oggi è Giovedì!
-            d4.setMedico(sara);
-            Disponibilita d5 = new Disponibilita("Mercoledì", "10:00 - 13:00");
-            d5.setMedico(dario);
-            Disponibilita d6 = new Disponibilita("Venerdì", "14:00 - 18:00");
-            d6.setMedico(dario);
-
-            // AGGIUNTA: Salviamo anche d5 e d6
-            gestore.salvaTutti(d1, d2, d3, d4, d5, d6);
-        }
-
-        // 4. Inserimento Fasce Orarie fisse di test (solo se la tabella è attualmente vuota)
-        List<FasciaOraria> caricate = gestore.cercaPerCampi(FasciaOraria.class, Map.of());
-        if (caricate.isEmpty() && marco != null && sara != null) {
-
-            FasciaOraria fascia1 = new FasciaOraria("09:00 - 09:30", LocalDate.of(2026, 7, 1), marco);
-            FasciaOraria fascia2 = new FasciaOraria("10:00 - 10:30", LocalDate.of(2026, 7, 1), marco);
-            FasciaOraria fascia3 = new FasciaOraria("09:00 - 09:30", LocalDate.of(2026, 7, 2), sara);
-            FasciaOraria fascia4 = new FasciaOraria("11:00 - 11:30", LocalDate.of(2026, 7, 2), sara);
-
-            gestore.salvaTutti(fascia1, fascia2, fascia3, fascia4);
-
-            // 5. Creazione Visite legate alle fasce fisse
-            if (mario != null) {
-                Visita visita1 = new Visita(mario, marco, fascia1);
-                fascia1.setStato(StatoFascia.PRENOTATA);
-
-                gestore.salva(visita1);
-                gestore.aggiorna(fascia1);
+            // Marco Neri (Cardiologia)
+            if (marco != null) {
+                Disponibilita d1 = new Disponibilita("Lunedì", "09:00 - 12:00"); d1.setMedico(marco);
+                Disponibilita d2 = new Disponibilita("Giovedì", "15:00 - 18:00"); d2.setMedico(marco);
+                gestore.salvaTutti(d1, d2);
             }
 
-            if (anna != null) {
-                Visita visita2 = new Visita(anna, sara, fascia3);
-                fascia3.setStato(StatoFascia.PRENOTATA);
+            // Sara Greco (Ortopedia)
+            if (sara != null) {
+                Disponibilita d3 = new Disponibilita("Martedì", "09:00 - 12:00"); d3.setMedico(sara);
+                Disponibilita d4 = new Disponibilita("Giovedì", "09:00 - 12:00"); d4.setMedico(sara);
+                gestore.salvaTutti(d3, d4);
+            }
 
-                gestore.salva(visita2);
-                gestore.aggiorna(fascia3);
+            // Dario Bianchi (Cardiologia)
+            if (dario != null) {
+                Disponibilita d5 = new Disponibilita("Mercoledì", "10:00 - 13:00"); d5.setMedico(dario);
+                Disponibilita d6 = new Disponibilita("Venerdì", "14:00 - 18:00"); d6.setMedico(dario);
+                gestore.salvaTutti(d5, d6);
+            }
+
+            // Luigi Verdi (Dermatologia)
+            if (luigi != null) {
+                Disponibilita d7 = new Disponibilita("Martedì", "15:00 - 18:00"); d7.setMedico(luigi);
+                Disponibilita d8 = new Disponibilita("Mercoledì", "09:00 - 12:00"); d8.setMedico(luigi);
+                gestore.salvaTutti(d7, d8);
+            }
+
+            // Elena Bruni (Oculistica)
+            if (elena != null) {
+                Disponibilita d9 = new Disponibilita("Lunedì", "14:00 - 18:00"); d9.setMedico(elena);
+                Disponibilita d10 = new Disponibilita("Venerdì", "09:00 - 13:00"); d10.setMedico(elena);
+                gestore.salvaTutti(d9, d10);
+            }
+
+            // Roberto Gialli (Neurologia)
+            if (roberto != null) {
+                Disponibilita d11 = new Disponibilita("Giovedì", "10:00 - 15:00"); d11.setMedico(roberto);
+                gestore.salvaTutti(d11);
+            }
+
+            // Giulia Viola (Pediatria)
+            if (giulia != null) {
+                Disponibilita d12 = new Disponibilita("Lunedì", "09:00 - 13:00"); d12.setMedico(giulia);
+                Disponibilita d13 = new Disponibilita("Mercoledì", "14:00 - 18:00"); d13.setMedico(giulia);
+                gestore.salvaTutti(d12, d13);
             }
         }
     }
