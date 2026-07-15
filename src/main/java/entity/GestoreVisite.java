@@ -62,15 +62,29 @@ public class GestoreVisite {
     }
 
     private void generaFasceSeMancanti(Long idMedico, LocalDate data) {
-        // Controllo se esistono già fasce per quel giorno
-        if (!gestorePersistenza.cercaPerCampi(FasciaOraria.class, Map.of("medico.id", idMedico, "data", data)).isEmpty()) return;
-
         Medico medico = gestorePersistenza.trovaPerId(Medico.class, idMedico);
         if (medico == null) return;
 
-        String giornoSettimana = getGiornoItaliano(data);
-        List<Disponibilita> dispList = gestorePersistenza.cercaPerCampi(Disponibilita.class, Map.of("medico.id", idMedico, "giorno", giornoSettimana));
+        // 1. Recuperiamo tutte le fasce GIÀ ESISTENTI per quel medico in quella data
+        List<FasciaOraria> fasceEsistenti = gestorePersistenza.cercaPerCampi(
+                FasciaOraria.class,
+                Map.of("medico.id", idMedico, "data", data)
+        );
 
+        // 2. Creiamo una lista (Set) con le stringhe degli orari già presenti per fare un controllo veloce
+        Set<String> orariGiaPresenti = new HashSet<>();
+        for (FasciaOraria f : fasceEsistenti) {
+            orariGiaPresenti.add(f.getOrario());
+        }
+
+        // 3. Recuperiamo la disponibilità teorica aggiornata del medico per quel giorno della settimana
+        String giornoSettimana = getGiornoItaliano(data);
+        List<Disponibilita> dispList = gestorePersistenza.cercaPerCampi(
+                Disponibilita.class,
+                Map.of("medico.id", idMedico, "giorno", giornoSettimana)
+        );
+
+        // 4. Generiamo le fasce e salviamo SOLO quelle che non sono già presenti nel database
         for (Disponibilita disp : dispList) {
             String[] orari = disp.getFasciaOraria().split(" - ");
             LocalTime inizio = LocalTime.parse(orari[0]);
@@ -78,7 +92,13 @@ public class GestoreVisite {
 
             while (inizio.isBefore(fine)) {
                 LocalTime succ = inizio.plusMinutes(30);
-                gestorePersistenza.salva(new FasciaOraria(inizio + " - " + succ, data, medico));
+                String orarioFascia = inizio + " - " + succ;
+
+                // Il cuore della modifica: controlliamo se l'orario specifico manca
+                if (!orariGiaPresenti.contains(orarioFascia)) {
+                    gestorePersistenza.salva(new FasciaOraria(orarioFascia, data, medico));
+                }
+
                 inizio = succ;
             }
         }
