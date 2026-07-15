@@ -32,3 +32,4 @@ public class PrenotazioneController {
         return GestoreVisite.getInstance().ottieniDisponibilitaMedico(idMedico);
     }
 }
+
