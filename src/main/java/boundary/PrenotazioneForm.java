@@ -13,10 +13,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-
 import com.toedter.calendar.JDateChooser;
 
-@SuppressWarnings("unchecked")
+
 public class PrenotazioneForm {
     private JPanel contentPane;
     private JTextField textCognome;
@@ -63,7 +62,7 @@ public class PrenotazioneForm {
 
         // Configurazione Calendario
         dateChooser = new JDateChooser();
-        dateChooser.setDate(new Date());
+        dateChooser.setDate(null);
         dateChooser.setMinSelectableDate(new Date()); // Non permette date passate
 
         // LIMITA A 3 MESI DA OGGI
@@ -103,7 +102,6 @@ public class PrenotazioneForm {
         });
 
         cmbMediciPerSpec.addActionListener(e -> {
-
             String medico = (String) cmbMediciPerSpec.getSelectedItem();
 
             if (medico == null || medico.equals("-- Seleziona un medico --")) {
@@ -114,23 +112,29 @@ public class PrenotazioneForm {
 
             Long idMedico = trovaIdMedicoDaNome(medico);
 
-            popolaFasceOrarie(idMedico);
+            // Guardiamo se nel calendario c'è già una data
+            if (dateChooser.getDate() == null) {
+                // Se la data è vuota, blocchiamo la tendina e chiediamo di inserirla
+                cmbFasciaOraria.removeAllItems();
+                cmbFasciaOraria.addItem("-- seleziona data --");
+                cmbFasciaOraria.setEnabled(false);
+            } else {
+                // Se l'utente aveva GIA' scelto una data in precedenza,
+                // ricarichiamo subito le fasce orarie per il NUOVO medico!
+                popolaFasceOrarie(idMedico);
+            }
 
-            Map<String, String> disponibilita =
-                    controller.ottieniDisponibilitaMedico(idMedico);
-
+            // Mostriamo i giorni di disponibilità standard del medico
+            Map<String, String> disponibilita = controller.ottieniDisponibilitaMedico(idMedico);
             StringBuilder sb = new StringBuilder();
-
             sb.append("Il medico fa studio:\n");
 
             for (Map.Entry<String, String> entry : disponibilita.entrySet()) {
-
                 sb.append("• ")
                         .append(entry.getKey())
                         .append(" dalle ")
                         .append(entry.getValue().replace(" - ", " alle "))
                         .append("\n");
-
             }
 
             textAreaInfoDisponibilita.setText(sb.toString());
@@ -139,7 +143,6 @@ public class PrenotazioneForm {
             textAreaInfoDisponibilita.setRows(5);
 
             aggiornaDimensioneFinestra();
-
         });
 
         siCheckBox.addActionListener(e -> {
@@ -154,9 +157,16 @@ public class PrenotazioneForm {
             aggiornaDimensioneFinestra();
         });
 
+    //Azione calendario
         dateChooser.addPropertyChangeListener("date", evt -> {
             String medico = (String) cmbMediciPerSpec.getSelectedItem();
-            if (medico != null) popolaFasceOrarie(trovaIdMedicoDaNome(medico));
+
+            // Procedi solo se è stato scelto un medico valido e una data valida
+            if (medico != null && !medico.equals("-- Seleziona un medico --")) {
+                if (dateChooser.getDate() != null) {
+                    popolaFasceOrarie(trovaIdMedicoDaNome(medico));
+                }
+            }
         });
 
         confermaButton.addActionListener(e -> gestisciConferma());
@@ -277,7 +287,13 @@ public class PrenotazioneForm {
         if (idMedico == null) return;
 
         Date dataSelezionata = dateChooser.getDate();
-        if (dataSelezionata == null) return;
+
+        // Se per qualche motivo la data è nulla, blocchiamo la tendina
+        if (dataSelezionata == null) {
+            cmbFasciaOraria.addItem("-- Seleziona una data --");
+            cmbFasciaOraria.setEnabled(false);
+            return;
+        }
 
         LocalDate localDate = dataSelezionata.toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -289,6 +305,7 @@ public class PrenotazioneForm {
             cmbFasciaOraria.addItem("Non ci sono fasce orarie disponibili");
             cmbFasciaOraria.setEnabled(false);
         } else {
+            // Abilitiamo la tendina e inseriamo le fasce trovate
             cmbFasciaOraria.setEnabled(true);
             for (String orario : mappaFasceOrarie.values()) {
                 cmbFasciaOraria.addItem(orario);
